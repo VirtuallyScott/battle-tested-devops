@@ -1,0 +1,1 @@
+Examples of using GitVersion and shell scripts to provide consistent semantic versioning across CI/CD platforms. Includes portable scripts to extract version info and integrate into pipelines or deployment metadata.
