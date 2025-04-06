@@ -1,0 +1,37 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+crash.log
+*.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*.plan
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Node
+node_modules/
+npm-debug.log
+
+# VSCode & IDEs
+.vscode/
+.idea/
+*.swp
+
+# Mac
+.DS_Store
+
+# Docker
+*.tar
+*.log
+
+# General
+.env
+.env.*
+secrets/
+*.bak
