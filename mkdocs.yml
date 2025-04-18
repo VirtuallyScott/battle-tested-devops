@@ -1,0 +1,18 @@
+site_name: Infrastructure Documentation
+site_url: https://your-domain.com/
+repo_url: https://github.com/your-org/your-repo
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.indexes
+
+nav:
+  - Home: index.md
+  - Versioning: ../versioning/README.md
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
