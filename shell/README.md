@@ -32,19 +32,19 @@ For Apple Silicon Macs (Recommended):
 
 1. Download and review:
 ```bash
-curl -sSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/develop/shell/install_misc.sh -o install_misc.sh
+curl -sSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/main/shell/install_misc.sh -o install_misc.sh
 chmod +x install_misc.sh
 ./install_misc.sh
 ```
 
 2. One-line method (less recommended):
 ```bash
-curl -sSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/develop/shell/install_misc.sh | bash
+curl -sSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/main/shell/install_misc.sh | bash
 ```
 
 3. Alternative method (clone repo):
 ```bash
-git clone https://github.com/VirtuallyScott/battle-tested-devops.git
+git clone https://github.com/VirtuallyScott/battle-tested-devops.git -b main
 cd battle-tested-devops/shell
 ./install_misc.sh
 ```
