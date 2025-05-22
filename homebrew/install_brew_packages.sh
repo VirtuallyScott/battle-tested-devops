@@ -5,7 +5,7 @@
 
 set -euo pipefail
 
-BREW_LIST_URL="https://raw.githubusercontent.com/YOUR_USER/YOUR_REPO/main/homebrew/brew_list.txt"
+BREW_LIST_URL="https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/develop/homebrew/brew_list.txt"
 LOG_FILE="${HOME:-/tmp}/install_brew_packages.log"
 TEMP_BREW_LIST="/tmp/brew_list.txt"
 
