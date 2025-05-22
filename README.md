@@ -1,6 +1,8 @@
 # 🛠️ Battle-Tested DevOps
 
-Welcome to **Battle-Tested DevOps**, a curated portfolio of real-world infrastructure, automation, and security patterns developed and used in production environments by a seasoned DevSecOps/Cloud Engineer.
+Welcome to **Battle-Tested DevOps**, a curated portfolio of real-world infrastructure, automation, and security patterns developed and used in production environments.
+
+This repository has moved to: https://github.com/VirtuallyScott/battle-tested-devops
 
 This repository is **not** another academic collection of hello-world scripts or contrived examples. Everything here is born from the field—from regulated industries, greenfield cloud migrations, enterprise modernization efforts, and the kind of fire drills you only survive with hardened, repeatable processes.
 
@@ -69,9 +71,9 @@ In addition to what’s already here, I’m actively building out:
 
 ---
 
-## 🤝 About the Author
+## 🤝 About This Repository
 
-I’m a DevSecOps engineer with a background in regulated industries, large-scale infrastructure projects, and cloud-native modernization. Most of these examples come from real-world scenarios—migrations, outages, audits, and firefights—where solutions had to work **now**, not just look good in theory.
+This collection comes from real-world scenarios—migrations, outages, audits, and firefights—where solutions had to work **now**, not just look good in theory. The repository is now maintained at https://github.com/VirtuallyScott/battle-tested-devops
 
 ---
 
