@@ -1,38 +1,58 @@
-# Development Environment Setup Tools
+# macOS Development Environment Configuration
 
-This repository contains scripts to configure and maintain a secure development environment.
+This repository contains scripts to configure and maintain a secure development environment on Apple Silicon Macs.
 
 ## Main Installer: `install_misc.sh`
 
-The primary installation script that sets up all configurations.
+The primary installation script that configures Zsh and maintains environment hygiene.
 
-### Features:
-- Installs Zsh configuration files (`.zshrc`, `.zlogout`)
-- Sets up secure environment directories (`~/.env`, `~/.secure_env`)
-- Downloads and installs utility scripts
-- Handles backups of existing files
-- Provides detailed logging
+### Purpose:
+- Configures Zsh for optimal development on Apple Silicon Macs
+- Maintains security hygiene by separating sensitive data from configuration files
+- Provides utility scripts for common development tasks
+
+### Key Features:
+- Installs optimized Zsh configuration files (`.zshrc`, `.zlogout`)
+- Sets up secure environment directories with proper permissions:
+  - `~/.env` for general environment variables (700)
+  - `~/.secure_env` for sensitive credentials (700)
+- Implements secure credential handling:
+  - Sensitive variables are loaded from separate, permission-protected files
+  - Never stores credentials directly in `.zshrc`
+- Includes utility scripts for:
+  - Virtual environment management (UV)
+  - Permission hygiene
+  - Script updates
+- Handles backups of existing files before modification
+- Provides detailed logging of all changes
 
 ### Installation:
 
-Recommended method:
+For Apple Silicon Macs (Recommended):
+
+1. Download and review:
 ```bash
-curl -sSL https://raw.githubusercontent.com/codeSnapped-LLC/misc/refs/heads/develop/install_misc.sh -o install_misc.sh
+curl -sSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/develop/shell/install_misc.sh -o install_misc.sh
 chmod +x install_misc.sh
 ./install_misc.sh
 ```
 
-One-line method (less recommended):
+2. One-line method (less recommended):
 ```bash
-curl -sSL https://raw.githubusercontent.com/codeSnapped-LLC/misc/refs/heads/develop/install_misc.sh | bash
+curl -sSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/develop/shell/install_misc.sh | bash
 ```
 
-Alternative method (clone repo):
+3. Alternative method (clone repo):
 ```bash
-git clone https://github.com/codeSnapped-LLC/misc.git
-cd misc
+git clone https://github.com/VirtuallyScott/battle-tested-devops.git
+cd battle-tested-devops/shell
 ./install_misc.sh
 ```
+
+### Post-Installation:
+- Review the installed `.zshrc` and `.zlogout` files
+- Store sensitive credentials in `~/.secure_env/secrets.sh` (automatically created with 600 permissions)
+- General environment variables can go in `~/.secure_env/exports.sh`
 
 ## Utility Scripts
 
