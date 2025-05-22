@@ -1,16 +1,28 @@
 #!/usr/bin/env bash
 
-# Script to install Homebrew packages listed in brew/brew_list.txt
+# Script to install Homebrew packages from a GitHub raw URL
 # Handles both formulae and casks, with error handling and logging.
 
 set -euo pipefail
 
-BREW_LIST_FILE="brew/brew_list.txt"
-LOG_FILE="brew/install_brew_packages.log"
+BREW_LIST_URL="https://raw.githubusercontent.com/YOUR_USER/YOUR_REPO/main/homebrew/brew_list.txt"
+LOG_FILE="$HOME/install_brew_packages.log"
+TEMP_BREW_LIST="/tmp/brew_list.txt"
 
 # Log a message with timestamp
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG_FILE"
+}
+
+# Download the brew list file
+download_brew_list() {
+    log "Downloading brew list from $BREW_LIST_URL"
+    if curl -sSf "$BREW_LIST_URL" -o "$TEMP_BREW_LIST"; then
+        log "Successfully downloaded brew list"
+    else
+        log "ERROR: Failed to download brew list from $BREW_LIST_URL"
+        exit 1
+    fi
 }
 
 # Install a single package (formula or cask)
@@ -54,10 +66,7 @@ main() {
         exit 1
     fi
 
-    if [[ ! -f "$BREW_LIST_FILE" ]]; then
-        log "ERROR: Package list file '$BREW_LIST_FILE' not found."
-        exit 1
-    fi
+    download_brew_list
 
     log "Starting Homebrew package installation..."
     local failed=0
@@ -69,7 +78,7 @@ main() {
             log "ERROR: Installation failed for package: $pkg"
             failed=1
         fi
-    done < "$BREW_LIST_FILE"
+    done < "$TEMP_BREW_LIST"
 
     if [[ $failed -eq 0 ]]; then
         log "All packages installed successfully."
