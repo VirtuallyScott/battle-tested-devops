@@ -72,7 +72,7 @@ In addition to what’s already here, I’m actively building out:
 
 ## 🤝 About This Repository
 
-This collection comes from real-world scenarios—migrations, outages, audits, and firefights—where solutions had to work **now**, not just look good in theory. The repository is now maintained at https://github.com/VirtuallyScott/battle-tested-devops
+This collection comes from real-world scenarios—migrations, outages, audits, and firefights—where solutions had to work **now**, not just look good in theory.
 
 ---
 
