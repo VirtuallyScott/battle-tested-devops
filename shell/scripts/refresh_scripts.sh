@@ -52,7 +52,7 @@ update_script() {
   
   log "Updating $script_name..."
   
-  if ! curl -sSL -f "$REPO_URL/scripts/$script_name" -o "$temp_file" 2>> "$LOG_FILE"; then
+  if ! curl -sSL -f "$REPO_URL/shell/scripts/$script_name" -o "$temp_file" 2>> "$LOG_FILE"; then
     warn "Failed to download $script_name"
     rm -f "$temp_file"
     return 1
