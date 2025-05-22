@@ -71,9 +71,9 @@ In addition to what’s already here, I’m actively building out:
 
 ---
 
-## 🤝 About the Author
+## 🤝 About This Repository
 
-I’m a DevSecOps engineer with a background in regulated industries, large-scale infrastructure projects, and cloud-native modernization. Most of these examples come from real-world scenarios—migrations, outages, audits, and firefights—where solutions had to work **now**, not just look good in theory.
+This collection comes from real-world scenarios—migrations, outages, audits, and firefights—where solutions had to work **now**, not just look good in theory. The repository is now maintained at https://github.com/VirtuallyScott/battle-tested-devops
 
 ---
 
