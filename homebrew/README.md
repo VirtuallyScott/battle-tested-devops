@@ -14,12 +14,12 @@ The `install_brew_packages.sh` script:
 
 ### Basic Installation
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/develop/homebrew/install_brew_packages.sh)"
+curl -fsSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/develop/homebrew/install_brew_packages.sh | bash
 ```
 
 ### With Debugging
 ```bash
-/bin/bash -x -c "$(curl -fsSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/develop/homebrew/install_brew_packages.sh)"
+curl -fsSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/develop/homebrew/install_brew_packages.sh | bash -x
 ```
 
 ### Manual Download & Run
