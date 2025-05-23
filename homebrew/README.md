@@ -14,17 +14,17 @@ The `install_brew_packages.sh` script:
 
 ### Basic Installation
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/YOUR_ORG/YOUR_REPO/main/homebrew/install_brew_packages.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/develop/homebrew/install_brew_packages.sh)"
 ```
 
 ### With Debugging
 ```bash
-/bin/bash -x -c "$(curl -fsSL https://raw.githubusercontent.com/YOUR_ORG/YOUR_REPO/main/homebrew/install_brew_packages.sh)"
+/bin/bash -x -c "$(curl -fsSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/develop/homebrew/install_brew_packages.sh)"
 ```
 
 ### Manual Download & Run
 ```bash
-curl -O https://raw.githubusercontent.com/YOUR_ORG/YOUR_REPO/main/homebrew/install_brew_packages.sh
+curl -O https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/develop/homebrew/install_brew_packages.sh
 chmod +x install_brew_packages.sh
 ./install_brew_packages.sh
 ```
@@ -32,7 +32,7 @@ chmod +x install_brew_packages.sh
 ## Package List Management
 
 1. Edit `brew_list.txt` to add/remove packages
-2. Commit and push changes
+2. Commit and push changes to the `develop` branch
 3. All team members can run the installer to sync their packages
 
 ## Requirements
@@ -46,3 +46,4 @@ chmod +x install_brew_packages.sh
 - The script will skip already installed packages
 - Failed installations are logged but don't stop the entire process
 - Logs are written to `~/install_brew_packages.log`
+- The script pulls packages from the `develop` branch by default
