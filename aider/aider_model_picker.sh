@@ -38,13 +38,37 @@ function pick_model {
   done
 }
 
+function configure_ollama {
+  # Set default Ollama API base URL if not already set
+  if [[ -z "${OLLAMA_API_BASE:-}" ]]; then
+    export OLLAMA_API_BASE=http://127.0.0.1:11434
+  fi
+
+  # Set context window size (default 8k tokens)
+  if [[ -z "${OLLAMA_CONTEXT_LENGTH:-}" ]]; then
+    export OLLAMA_CONTEXT_LENGTH=8192
+  fi
+}
+
 function run_aider {
   echo "Running Aider with model: $chosen_model"
+  echo "Using Ollama API: $OLLAMA_API_BASE"
+  echo "Context window size: $OLLAMA_CONTEXT_LENGTH tokens"
+  
+  # Start Ollama server with configured context length
+  OLLAMA_CONTEXT_LENGTH=$OLLAMA_CONTEXT_LENGTH ollama serve >/dev/null 2>&1 &
+  local ollama_pid=$!
+  
+  # Run aider with the selected model
   aider --model "ollama_chat/${chosen_model}"
+  
+  # Clean up Ollama process
+  kill $ollama_pid 2>/dev/null
 }
 
 # Main Execution Flow
 check_dependencies
+configure_ollama
 list_models
 pick_model
 run_aider
