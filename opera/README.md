@@ -4,7 +4,7 @@ These scripts allow you to export and import a "golden" Opera browser profile be
 
 ## Files
 
-- `export_opera_profile.sh`: Archives the Opera config directory from the current machine
+- `export_opera_profile.sh`: Archives the Opera config directory from the current machine, excluding cache and history
 - `import_opera_profile.sh`: Restores the profile on a new machine from the exported archive
 
 ## Usage
@@ -32,5 +32,5 @@ chmod +x import_opera_profile.sh
 ## Notes
 
 - Passwords and cookies are not portable due to OS-level encryption
+- Cache and browsing history are excluded from the export
 - This process works best with identical versions of Opera
-

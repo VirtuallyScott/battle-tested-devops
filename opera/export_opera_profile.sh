@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Export a "golden" Opera profile for replication
+# Export a "golden" Opera profile for replication, excluding cache and history
 
 set -euo pipefail
 
@@ -19,6 +19,9 @@ tar --exclude="Crash Reports" \
     --exclude="GrShaderCache" \
     --exclude="Media Cache" \
     --exclude="Application Cache" \
+    --exclude="History" \
+    --exclude="History Provider Cache" \
+    --exclude="Visited Links" \
     -czf "$EXPORT_TAR" -C "$SOURCE_DIR" .
 
 echo "[INFO] Opera profile exported to: $EXPORT_TAR"
