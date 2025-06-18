@@ -15,11 +15,11 @@ function check_dependencies {
 function list_models {
   echo "Fetching available Ollama models..."
 
-  if [[ -n "${ZSH_VERSION:-}" ]]; then
-    models=("${(@f)$(ollama ls | awk 'NR>1 {print $1}')}")
-  else
-    mapfile -t models < <(ollama ls | awk 'NR>1 {print $1}')
-  fi
+  # Get models list in a way that works for both bash and zsh
+  models=()
+  while IFS= read -r line; do
+    models+=("$line")
+  done < <(ollama ls | awk 'NR>1 {print $1}')
 
   if [ ${#models[@]} -eq 0 ]; then
     error_exit "No models found from 'ollama ls'"
