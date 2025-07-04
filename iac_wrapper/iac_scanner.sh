@@ -112,7 +112,7 @@ run_trivy() {
 
   echo "[*] Running Trivy IaC scan on directory: $(pwd)"
   
-  if ! trivy config . --format "$format" --output "${output_basename}.${format}"; then
+  if ! trivy config . --format "$format" --output "${output_basename}.${format}" --quiet 2>/dev/null; then
     echo "[!] Trivy scan failed"
     return 1
   fi
@@ -146,7 +146,7 @@ run_checkov() {
   fi
 
   # Run Checkov with output-file-path to ./scans directory
-  if ! checkov -d . --output "$checkov_format" --output-file-path ./scans; then
+  if ! checkov -d . --output "$checkov_format" --output-file-path ./scans --quiet --soft-fail; then
     echo "[!] Checkov scan failed"
     return 1
   fi
