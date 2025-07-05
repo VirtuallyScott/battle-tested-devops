@@ -13,24 +13,24 @@ The `install_brew_packages.sh` script:
 
 ## Usage
 
-### Interactive Installation (Choose Role)
-```bash
-curl -fsSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/develop/homebrew/install_brew_packages.sh | bash
-```
+### Install from Main Branch
 
-### Non-Interactive Installation (Specify Role)
+To install using the latest script and package list from the `main` branch, run:
+
 ```bash
-curl -fsSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/develop/homebrew/install_brew_packages.sh | bash -s -- --role devops
+curl -fsSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/main/homebrew/install_brew_packages.sh | bash
 ```
 
 ### With Debugging
+
 ```bash
-curl -fsSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/develop/homebrew/install_brew_packages.sh | bash -x
+curl -fsSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/main/homebrew/install_brew_packages.sh | bash -x
 ```
 
 ### Manual Download & Run
+
 ```bash
-curl -O https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/develop/homebrew/install_brew_packages.sh
+curl -O https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/main/homebrew/install_brew_packages.sh
 chmod +x install_brew_packages.sh
 ./install_brew_packages.sh
 ```
