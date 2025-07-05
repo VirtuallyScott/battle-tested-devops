@@ -7,14 +7,17 @@ arm-linux-gnueabihf-binutils
 arm-none-eabi-gcc
 awscli
 azure-cli
+bash
 black
 bottom
 buildkit
 burp
 bzip3
 checkov
+clamav
 cmake
 copa
+coreutils
 daemontools
 dnstracer
 docutils
@@ -40,7 +43,6 @@ hydra
 hyperfine
 imagemagick
 ios-deploy
-jansson
 jq
 jsonlint
 kubernetes-cli
@@ -55,6 +57,7 @@ marp-cli
 mas
 maven
 mdf2iso
+mondoohq/mondoo/cnspec
 nasm
 ncdu
 nginx
