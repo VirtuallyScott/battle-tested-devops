@@ -1,54 +1,47 @@
 # Homebrew Package Management
 
-This directory contains scripts to maintain role-specific Homebrew package installations across developer machines.
+This directory contains scripts to maintain Homebrew package and cask installations across developer machines.
 
 ## Purpose
 
 The `install_brew_packages.sh` script:
-- Presents a menu of available roles (DevOps, QA Engineer, Cloud Engineer)
-- Downloads the appropriate package list for the selected role
-- Installs all listed Homebrew formulae and casks
+- Installs Homebrew formulae from the local `brew_list.txt` file
+- Installs Homebrew casks from the local `cask_list.txt` file
+- Installs packages first, then casks
 - Handles errors gracefully and logs all operations
 - Can be run repeatedly to keep packages up-to-date
 
 ## Usage
 
-### Install from Main Branch
+### Local Execution
 
-To install using the latest script and package list from the `main` branch, run:
+To run the script locally (requires the repository to be cloned):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/main/homebrew/install_brew_packages.sh | bash
+cd homebrew
+./install_brew_packages.sh
 ```
 
 ### With Debugging
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/main/homebrew/install_brew_packages.sh | bash -x
-```
-
-### Manual Download & Run
-
-```bash
-curl -O https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/main/homebrew/install_brew_packages.sh
-chmod +x install_brew_packages.sh
-./install_brew_packages.sh
+cd homebrew
+bash -x install_brew_packages.sh
 ```
 
 ## Package List Management
 
-### Role-Specific Packages
-Each role has its own package list file following this naming convention:
-- `brewList-devops.txt`
-- `brewList-qa-engineer.txt` 
-- `brewList-cloud-engineer.txt`
+### Package Sources
+- **Formulae**: Listed in the local `brew_list.txt` file
+- **Casks**: Listed in the local `cask_list.txt` file
 
-To add a new role:
-1. Create a new package list file with the naming pattern `brewList-<role>.txt`
-   - Use lowercase
-   - Hyphenate spaces (e.g., "data-engineer" becomes `brewList-data-engineer.txt`)
-2. Add the role name to the `ROLES` array in `install_brew_packages.sh`
-3. Commit and push changes to the `develop` branch
+### Adding Packages
+- To add formulae: Edit the local `brew_list.txt` file
+- To add casks: Edit the local `cask_list.txt` file
+
+### Installation Order
+1. All Homebrew formulae are installed first
+2. All Homebrew casks are installed second
 
 ## Requirements
 
