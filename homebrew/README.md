@@ -11,9 +11,17 @@ The `install_brew_packages.sh` script:
 - Handles errors gracefully and logs all operations
 - Can be run repeatedly to keep packages up-to-date
 
+The `upgrade_brew_packages.sh` script:
+- Updates Homebrew itself to the latest version
+- Upgrades all installed Homebrew formulae to their latest versions
+- Upgrades all installed Homebrew casks to their latest versions
+- Performs cleanup to remove old versions and clear cache
+- Handles errors gracefully and logs all operations
+- Provides a summary of the upgrade process
+
 ## Usage
 
-### Install from Main Branch
+### Install Packages from Main Branch
 
 To install using the latest script and package lists from the `main` branch, run:
 
@@ -33,6 +41,28 @@ curl -fsSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops
 curl -O https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/main/homebrew/install_brew_packages.sh
 chmod +x install_brew_packages.sh
 ./install_brew_packages.sh
+```
+
+### Upgrade Packages from Main Branch
+
+To upgrade all installed Homebrew packages and casks using the latest script from the `main` branch, run:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/main/homebrew/upgrade_brew_packages.sh | bash
+```
+
+### With Debugging
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/main/homebrew/upgrade_brew_packages.sh | bash -x
+```
+
+### Manual Download & Run
+
+```bash
+curl -O https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/main/homebrew/upgrade_brew_packages.sh
+chmod +x upgrade_brew_packages.sh
+./upgrade_brew_packages.sh
 ```
 
 ## Package List Management
