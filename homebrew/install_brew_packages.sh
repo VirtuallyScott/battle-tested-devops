@@ -1,38 +1,40 @@
 #!/usr/bin/env bash
 
-# Script to install Homebrew packages from local brew_list.txt file
-# Handles both formulae and casks, with error handling and logging.
+# Script to install Homebrew packages and casks from GitHub repository
+# Downloads package lists and installs formulae first, then casks
+# Handles errors gracefully and logs all operations
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BREW_LIST_FILE="${SCRIPT_DIR}/brew_list.txt"
-CASK_LIST_FILE="${SCRIPT_DIR}/cask_list.txt"
+BREW_LIST_URL="https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/main/homebrew/brew_list.txt"
+CASK_LIST_URL="https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/main/homebrew/cask_list.txt"
 LOG_FILE="${HOME:-/tmp}/install_brew_packages.log"
+TEMP_BREW_LIST="/tmp/brew_list.txt"
+TEMP_CASK_LIST="/tmp/cask_list.txt"
 
 # Log a message with timestamp
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG_FILE"
 }
 
-# Check if the brew list file exists
-check_brew_list() {
-    log "Checking for brew list at $BREW_LIST_FILE"
-    if [[ -f "$BREW_LIST_FILE" ]]; then
-        log "Found brew list file"
+# Download the brew list file
+download_brew_list() {
+    log "Downloading brew list from $BREW_LIST_URL"
+    if curl -sSf "$BREW_LIST_URL" -o "$TEMP_BREW_LIST"; then
+        log "Successfully downloaded brew list"
     else
-        log "ERROR: Brew list file not found at $BREW_LIST_FILE"
+        log "ERROR: Failed to download brew list from $BREW_LIST_URL"
         exit 1
     fi
 }
 
-# Check if the cask list file exists
-check_cask_list() {
-    log "Checking for cask list at $CASK_LIST_FILE"
-    if [[ -f "$CASK_LIST_FILE" ]]; then
-        log "Found cask list file"
+# Download the cask list file
+download_cask_list() {
+    log "Downloading cask list from $CASK_LIST_URL"
+    if curl -sSf "$CASK_LIST_URL" -o "$TEMP_CASK_LIST"; then
+        log "Successfully downloaded cask list"
     else
-        log "ERROR: Cask list file not found at $CASK_LIST_FILE"
+        log "ERROR: Failed to download cask list from $CASK_LIST_URL"
         exit 1
     fi
 }
@@ -87,8 +89,8 @@ main() {
         exit 1
     fi
 
-    check_brew_list
-    check_cask_list
+    download_brew_list
+    download_cask_list
 
     log "Starting Homebrew package installation..."
     local failed=0
@@ -101,7 +103,7 @@ main() {
             log "ERROR: Installation failed for package: $pkg"
             failed=1
         fi
-    done < "$BREW_LIST_FILE"
+    done < "$TEMP_BREW_LIST"
 
     log "Starting Homebrew cask installation..."
     
@@ -113,7 +115,10 @@ main() {
             log "ERROR: Installation failed for cask: $cask"
             failed=1
         fi
-    done < "$CASK_LIST_FILE"
+    done < "$TEMP_CASK_LIST"
+
+    # Clean up temporary files
+    rm -f "$TEMP_BREW_LIST" "$TEMP_CASK_LIST"
 
     if [[ $failed -eq 0 ]]; then
         log "All packages and casks installed successfully."

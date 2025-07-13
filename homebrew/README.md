@@ -5,39 +5,45 @@ This directory contains scripts to maintain Homebrew package and cask installati
 ## Purpose
 
 The `install_brew_packages.sh` script:
-- Installs Homebrew formulae from the local `brew_list.txt` file
-- Installs Homebrew casks from the local `cask_list.txt` file
+- Downloads and installs Homebrew formulae from the remote `brew_list.txt` file
+- Downloads and installs Homebrew casks from the remote `cask_list.txt` file
 - Installs packages first, then casks
 - Handles errors gracefully and logs all operations
 - Can be run repeatedly to keep packages up-to-date
 
 ## Usage
 
-### Local Execution
+### Install from Main Branch
 
-To run the script locally (requires the repository to be cloned):
+To install using the latest script and package lists from the `main` branch, run:
 
 ```bash
-cd homebrew
-./install_brew_packages.sh
+curl -fsSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/main/homebrew/install_brew_packages.sh | bash
 ```
 
 ### With Debugging
 
 ```bash
-cd homebrew
-bash -x install_brew_packages.sh
+curl -fsSL https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/main/homebrew/install_brew_packages.sh | bash -x
+```
+
+### Manual Download & Run
+
+```bash
+curl -O https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/refs/heads/main/homebrew/install_brew_packages.sh
+chmod +x install_brew_packages.sh
+./install_brew_packages.sh
 ```
 
 ## Package List Management
 
 ### Package Sources
-- **Formulae**: Listed in the local `brew_list.txt` file
-- **Casks**: Listed in the local `cask_list.txt` file
+- **Formulae**: Downloaded from the remote `brew_list.txt` file in the main branch
+- **Casks**: Downloaded from the remote `cask_list.txt` file in the main branch
 
 ### Adding Packages
-- To add formulae: Edit the local `brew_list.txt` file
-- To add casks: Edit the local `cask_list.txt` file
+- To add formulae: Edit the `brew_list.txt` file in the repository's main branch
+- To add casks: Edit the `cask_list.txt` file in the repository's main branch
 
 ### Installation Order
 1. All Homebrew formulae are installed first
@@ -51,8 +57,8 @@ bash -x install_brew_packages.sh
 
 ## Notes
 
-- The script will skip already installed packages
+- The script will skip already installed packages and casks
 - Failed installations are logged but don't stop the entire process
 - Logs are written to `~/install_brew_packages.log`
-- Package lists are pulled from the `develop` branch by default
-- Default role if not specified: DevOps
+- Package lists are downloaded from the `main` branch
+- Temporary files are cleaned up after installation
