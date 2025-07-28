@@ -16,7 +16,7 @@ A lightweight shell implementation of [GitVersion](https://github.com/GitTools/G
 
 ```bash
 # Download and make executable
-curl -o gitversion.sh https://raw.githubusercontent.com/your-repo/gitversion.sh
+curl -o gitversion.sh https://raw.githubusercontent.com/VirtuallyScott/battle-tested-devops/main/gitversion-sh/gitversion.sh
 chmod +x gitversion.sh
 
 # Optionally, move to PATH
