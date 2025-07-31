@@ -1,0 +1,27 @@
+{
+  "workflow": "gitflow",
+  "next-version": "1.0.0",
+  "tag-prefix": "v",
+  "branches": {
+    "main": {
+      "increment": "patch",
+      "prevent-increment-of-merged-branch-version": true
+    },
+    "develop": {
+      "increment": "minor",
+      "pre-release-tag": "alpha"
+    },
+    "feature": {
+      "increment": "minor",
+      "pre-release-tag": "{BranchName}"
+    },
+    "release": {
+      "increment": "none",
+      "pre-release-tag": "beta"
+    },
+    "hotfix": {
+      "increment": "patch",
+      "pre-release-tag": "hotfix"
+    }
+  }
+}
