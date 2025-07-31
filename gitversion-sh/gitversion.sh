@@ -15,7 +15,7 @@ USAGE:
 OPTIONS:
     -h, --help              Show this help message
     -v, --version           Show version information
-    -o, --output FORMAT     Output format (json|text) [default: text]
+    -o, --output FORMAT     Output format (json|text|AssemblySemVer|AssemblySemFileVer) [default: text]
     -c, --config FILE       Path to configuration file
     -b, --branch BRANCH     Target branch [default: current branch]
     -w, --workflow TYPE     Workflow type (gitflow|githubflow|trunk) [default: gitflow]
@@ -27,6 +27,8 @@ OPTIONS:
 EXAMPLES:
     $SCRIPT_NAME                    # Calculate version for current branch
     $SCRIPT_NAME -o json            # Output as JSON
+    $SCRIPT_NAME -o AssemblySemVer  # Output AssemblySemVer only
+    $SCRIPT_NAME -o AssemblySemFileVer # Output AssemblySemFileVer only
     $SCRIPT_NAME -b main            # Calculate version for main branch
     $SCRIPT_NAME --major            # Force major increment
 
@@ -278,6 +280,26 @@ output_text() {
     echo "$version"
 }
 
+output_assembly_semver() {
+    local version="$1"
+    if parse_semver "$version"; then
+        echo "$MAJOR.$MINOR.$PATCH.0"
+    else
+        log_error "Failed to parse version: $version"
+        exit 1
+    fi
+}
+
+output_assembly_semfilever() {
+    local version="$1"
+    if parse_semver "$version"; then
+        echo "$MAJOR.$MINOR.$PATCH.0"
+    else
+        log_error "Failed to parse version: $version"
+        exit 1
+    fi
+}
+
 output_json() {
     local version="$1"
     local branch="$2"
@@ -395,6 +417,12 @@ main() {
             ;;
         "json")
             output_json "$version" "$target_branch" "$workflow"
+            ;;
+        "AssemblySemVer")
+            output_assembly_semver "$version"
+            ;;
+        "AssemblySemFileVer")
+            output_assembly_semfilever "$version"
             ;;
         *)
             log_error "Unknown output format: $output_format"

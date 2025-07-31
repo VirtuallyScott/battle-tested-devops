@@ -42,7 +42,7 @@ gitversion [OPTIONS]
 OPTIONS:
     -h, --help              Show help message
     -v, --version           Show version information
-    -o, --output FORMAT     Output format (json|text) [default: text]
+    -o, --output FORMAT     Output format (json|text|AssemblySemVer|AssemblySemFileVer) [default: text]
     -c, --config FILE       Path to configuration file
     -b, --branch BRANCH     Target branch [default: current branch]
     -w, --workflow TYPE     Workflow type (gitflow|githubflow|trunk) [default: gitflow]
@@ -60,6 +60,12 @@ gitversion
 
 # JSON output for CI/CD integration
 gitversion -o json
+
+# Output AssemblySemVer format (1.2.3.0)
+gitversion -o AssemblySemVer
+
+# Output AssemblySemFileVer format (1.2.3.0)
+gitversion -o AssemblySemFileVer
 
 # Calculate version for specific branch
 gitversion -b main
@@ -171,6 +177,20 @@ export DEBUG=true  # Enable debug logging
 ```
 1.2.3-alpha.5+10+abc1234
 ```
+
+### Assembly Version Outputs
+
+#### AssemblySemVer
+```
+1.2.3.0
+```
+The `AssemblySemVer` format outputs a four-part version number suitable for .NET Assembly versioning, always ending with `.0` for the build number.
+
+#### AssemblySemFileVer  
+```
+1.2.3.0
+```
+The `AssemblySemFileVer` format outputs a four-part version number suitable for .NET Assembly file versioning, always ending with `.0` for the build number.
 
 ### JSON Output
 
