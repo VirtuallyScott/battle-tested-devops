@@ -2,7 +2,16 @@
   "permissions": {
     "allow": [
       "Bash(git checkout:*)",
-      "Bash(git fetch:*)"
+      "Bash(git fetch:*)",
+      "Bash(git ls-tree:*)",
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(git merge:*)",
+      "Bash(git stash:*)",
+      "Bash(chmod:*)",
+      "Bash(./run_tests.sh)",
+      "WebSearch",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": []
