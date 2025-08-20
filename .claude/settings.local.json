@@ -11,7 +11,12 @@
       "Bash(chmod:*)",
       "Bash(./run_tests.sh)",
       "WebSearch",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(go mod:*)",
+      "Bash(make test-unit:*)",
+      "Bash(make:*)",
+      "Bash(./build/gitversion:*)",
+      "Bash(./gitversion-go/build/gitversion:*)"
     ],
     "deny": [],
     "ask": []
