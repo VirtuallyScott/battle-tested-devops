@@ -93,6 +93,96 @@ parse_semver() {
     fi
 }
 
+parse_config_file() {
+    local config_file="$1"
+    local branch="$2"
+    
+    if [[ ! -f "$config_file" ]]; then
+        log_error "Configuration file not found: $config_file"
+        return 1
+    fi
+    
+    local extension="${config_file##*.}"
+    case "$extension" in
+        "json")
+            parse_json_config "$config_file" "$branch"
+            ;;
+        "yml"|"yaml")
+            parse_yaml_config "$config_file" "$branch"
+            ;;
+        *)
+            log_error "Unsupported configuration file format: $extension"
+            return 1
+            ;;
+    esac
+}
+
+parse_json_config() {
+    local config_file="$1"
+    local branch="$2"
+    
+    if ! command -v jq >/dev/null 2>&1; then
+        log_error "jq is required to parse JSON configuration files"
+        return 1
+    fi
+    
+    # Parse branch-specific configuration
+    local branch_config
+    branch_config=$(jq -r --arg branch "$branch" '.branches[$branch] // {}' "$config_file" 2>/dev/null)
+    
+    if [[ "$branch_config" != "{}" ]]; then
+        # Extract branch-specific settings
+        local increment
+        increment=$(echo "$branch_config" | jq -r '.increment // empty' 2>/dev/null)
+        if [[ -n "$increment" && "$increment" != "null" ]]; then
+            CONFIG_INCREMENT="$increment"
+        fi
+        
+        local tag
+        tag=$(echo "$branch_config" | jq -r '.tag // empty' 2>/dev/null)
+        if [[ -n "$tag" && "$tag" != "null" ]]; then
+            CONFIG_TAG="$tag"
+        fi
+    fi
+    
+    # Parse global settings
+    local next_version
+    next_version=$(jq -r '."next-version" // empty' "$config_file" 2>/dev/null)
+    if [[ -n "$next_version" && "$next_version" != "null" ]]; then
+        CONFIG_NEXT_VERSION="$next_version"
+    fi
+}
+
+parse_yaml_config() {
+    local config_file="$1"
+    local branch="$2"
+    
+    if ! command -v yq >/dev/null 2>&1; then
+        log_error "yq is required to parse YAML configuration files"
+        return 1
+    fi
+    
+    # Parse branch-specific configuration
+    local increment
+    increment=$(yq eval ".branches[\"$branch\"].increment" "$config_file" 2>/dev/null)
+    if [[ "$increment" != "null" && -n "$increment" ]]; then
+        CONFIG_INCREMENT="$increment"
+    fi
+    
+    local tag
+    tag=$(yq eval ".branches[\"$branch\"].tag" "$config_file" 2>/dev/null)
+    if [[ "$tag" != "null" && -n "$tag" ]]; then
+        CONFIG_TAG="$tag"
+    fi
+    
+    # Parse global settings
+    local next_version
+    next_version=$(yq eval ".next-version" "$config_file" 2>/dev/null)
+    if [[ "$next_version" != "null" && -n "$next_version" ]]; then
+        CONFIG_NEXT_VERSION="$next_version"
+    fi
+}
+
 get_branch_type() {
     local branch="$1"
     local workflow="$2"
@@ -348,6 +438,11 @@ main() {
     local force_increment=""
     local next_version=""
     
+    # Configuration variables
+    CONFIG_INCREMENT=""
+    CONFIG_TAG=""
+    CONFIG_NEXT_VERSION=""
+    
     while [[ $# -gt 0 ]]; do
         case $1 in
             -h|--help)
@@ -406,6 +501,15 @@ main() {
     
     if [[ -n "$config_file" && -f "$config_file" ]]; then
         log_debug "Loading configuration from: $config_file"
+        parse_config_file "$config_file" "$target_branch"
+        
+        # Override values from config if not explicitly set
+        if [[ -z "$force_increment" && -n "$CONFIG_INCREMENT" ]]; then
+            force_increment="$CONFIG_INCREMENT"
+        fi
+        if [[ -z "$next_version" && -n "$CONFIG_NEXT_VERSION" ]]; then
+            next_version="$CONFIG_NEXT_VERSION"
+        fi
     fi
     
     local version
