@@ -1,0 +1,12 @@
+{
+    "next-version": "1.0.0",
+    "increment": "Patch",
+    "branches": {
+        "main": {
+            "increment": "Minor"
+        },
+        "develop": {
+            "increment": "Patch"
+        }
+    }
+}
