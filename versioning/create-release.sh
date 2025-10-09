@@ -86,7 +86,167 @@ create_release_branch() {
         git checkout -b "$branch_name"
     fi
     
-    echo "$branch_name"
+    printf "%s" "$branch_name"
+}
+
+# Create security manifests (checksums and signatures)
+create_security_manifests() {
+    local version="$1"
+    local checksums_file="SHA256SUMS"
+    local signatures_file="SHA256SUMS.sig"
+    
+    log "Creating security manifests for version $version"
+    
+    # Create SHA256 checksums for important files
+    log "Generating SHA256 checksums..."
+    
+    # Find all executable scripts and important files
+    find . -type f \( \
+        -name "*.sh" -o \
+        -name "*.py" -o \
+        -name "*.go" -o \
+        -name "*.json" -o \
+        -name "*.yml" -o \
+        -name "*.yaml" -o \
+        -name "Makefile" -o \
+        -name "Dockerfile" -o \
+        -name "*.md" \
+    \) ! -path "./.git/*" ! -path "./build/*" ! -path "./scans/*" | \
+    sort | \
+    xargs sha256sum > "$checksums_file"
+    
+    # Add the release notes to checksums
+    if [[ -f "RELEASE_NOTES.md" ]]; then
+        sha256sum RELEASE_NOTES.md >> "$checksums_file"
+    fi
+    
+    log "Created $checksums_file with $(wc -l < "$checksums_file") file checksums"
+    
+    # Attempt to create GPG signature if GPG is available and configured
+    if command -v gpg >/dev/null 2>&1; then
+        local gpg_key_id
+        gpg_key_id=$(git config --get user.signingkey 2>/dev/null || echo "")
+        
+        if [[ -n "$gpg_key_id" ]]; then
+            log "Creating GPG signature with key: $gpg_key_id"
+            if gpg --detach-sign --armor --output "$signatures_file" "$checksums_file" 2>/dev/null; then
+                success "Created GPG signature: $signatures_file"
+            else
+                warn "Failed to create GPG signature. Continuing without signature."
+            fi
+        else
+            warn "No GPG signing key configured. Skipping signature creation."
+            warn "To enable signing: git config user.signingkey <your-key-id>"
+        fi
+    else
+        warn "GPG not available. Skipping signature creation."
+    fi
+    
+    # Create verification instructions
+    cat > "VERIFY.md" << EOF
+# Security Verification
+
+This release includes integrity verification files to ensure the authenticity and integrity of the code.
+
+## Files
+
+- \`SHA256SUMS\` - SHA256 checksums for all important files
+$(if [[ -f "$signatures_file" ]]; then echo "- \`SHA256SUMS.sig\` - GPG signature of the checksums file"; fi)
+- \`VERIFY.md\` - This verification guide
+
+## Verification Steps
+
+### 1. Verify File Integrity
+
+\`\`\`bash
+# Download the release files
+curl -L -O https://github.com/VirtuallyScott/battle-tested-devops/releases/download/v${version}/SHA256SUMS
+
+# Verify checksums of downloaded files
+sha256sum -c SHA256SUMS
+
+# Or verify specific files
+sha256sum gitversion-sh/gitversion.sh
+grep "gitversion-sh/gitversion.sh" SHA256SUMS
+\`\`\`
+
+$(if [[ -f "$signatures_file" ]]; then cat << 'GPGEOF'
+### 2. Verify GPG Signature
+
+```bash
+# Download the signature file
+curl -L -O https://github.com/VirtuallyScott/battle-tested-devops/releases/download/v${version}/SHA256SUMS.sig
+
+# Import the public key (first time only)
+curl -L https://github.com/VirtuallyScott.gpg | gpg --import
+
+# Verify the signature
+gpg --verify SHA256SUMS.sig SHA256SUMS
+```
+
+### 3. Verify GPG Key Fingerprint
+
+Ensure the GPG key fingerprint matches the expected value:
+
+```bash
+gpg --fingerprint
+```
+
+Expected fingerprint: [To be added - run 'gpg --fingerprint' to get your key fingerprint]
+GPGEOF
+fi)
+
+## Security Best Practices
+
+1. **Always verify checksums** before using downloaded files
+2. **Check GPG signatures** if available to ensure authenticity
+3. **Use HTTPS** when downloading release files
+4. **Verify the source** - only download from official GitHub releases
+5. **Keep verification files** for audit trails
+
+## Reporting Security Issues
+
+If you discover a security vulnerability or integrity issue, please report it privately to:
+- GitHub Security Advisories: https://github.com/VirtuallyScott/battle-tested-devops/security/advisories
+- Email: [security contact to be added]
+
+## Automated Verification
+
+You can automate verification in your CI/CD pipelines:
+
+\`\`\`bash
+#!/bin/bash
+# verify-release.sh - Automated release verification
+
+set -euo pipefail
+
+VERSION="\${1:-latest}"
+BASE_URL="https://github.com/VirtuallyScott/battle-tested-devops/releases/download/v\${VERSION}"
+
+# Download checksums
+curl -L -O "\${BASE_URL}/SHA256SUMS"
+
+# Download signature if available
+if curl -L -f -O "\${BASE_URL}/SHA256SUMS.sig"; then
+    echo "Verifying GPG signature..."
+    gpg --verify SHA256SUMS.sig SHA256SUMS || {
+        echo "GPG verification failed!"
+        exit 1
+    }
+fi
+
+# Verify checksums
+echo "Verifying file integrity..."
+sha256sum -c SHA256SUMS || {
+    echo "Checksum verification failed!"
+    exit 1
+}
+
+echo "Release verification successful!"
+\`\`\`
+EOF
+
+    success "Created security verification files"
 }
 
 # Create RELEASE_NOTES.md
@@ -123,6 +283,26 @@ create_release_notes() {
 
 $(git log --pretty=format:"- %s (%h)" --no-merges "$commit_range" 2>/dev/null || echo "- Initial release")
 
+## Security & Integrity
+
+This release includes integrity verification:
+
+- **SHA256 Checksums**: \`SHA256SUMS\` file contains checksums for all important files
+- **GPG Signature**: \`SHA256SUMS.sig\` provides cryptographic verification (if available)
+- **Verification Guide**: \`VERIFY.md\` contains detailed verification instructions
+
+### Quick Verification
+
+\`\`\`bash
+# Download and verify checksums
+curl -L -O https://github.com/VirtuallyScott/battle-tested-devops/releases/download/v${version}/SHA256SUMS
+sha256sum -c SHA256SUMS
+
+# Verify GPG signature (if available)
+curl -L -O https://github.com/VirtuallyScott/battle-tested-devops/releases/download/v${version}/SHA256SUMS.sig
+gpg --verify SHA256SUMS.sig SHA256SUMS
+\`\`\`
+
 ## Installation
 
 \`\`\`bash
@@ -153,11 +333,22 @@ commit_and_push() {
     local version="$1"
     local branch_name="$2"
     
-    log "Adding RELEASE_NOTES.md to git"
-    git add RELEASE_NOTES.md
+    log "Adding release files to git"
+    git add RELEASE_NOTES.md SHA256SUMS VERIFY.md
     
-    log "Committing release notes"
-    git commit -m "docs: add release notes for v${version} [skip ci]"
+    # Add signature file if it exists
+    if [[ -f "SHA256SUMS.sig" ]]; then
+        git add SHA256SUMS.sig
+        log "Added GPG signature to commit"
+    fi
+    
+    log "Committing release files"
+    git commit -m "docs: add release v${version} with security manifests [skip ci]
+
+- Release notes with changelog and security information
+- SHA256 checksums for integrity verification
+- Verification instructions and best practices
+$(if [[ -f "SHA256SUMS.sig" ]]; then echo "- GPG signature for authenticity verification"; fi)"
     
     log "Pushing release branch to origin"
     git push -u origin "$branch_name"
@@ -271,16 +462,27 @@ EOF
     branch_name=$(create_release_branch "$version")
     
     create_release_notes "$version" "$full_version"
+    create_security_manifests "$version"
     commit_and_push "$version" "$branch_name"
     tag_release "$version" "$full_version"
     
     success "Release v${version} created successfully!"
     log "Release branch: $branch_name"
     log "Tag: v${version}"
+    log ""
+    log "Security files created:"
+    log "  - SHA256SUMS (checksums for all files)"
+    if [[ -f "SHA256SUMS.sig" ]]; then
+        log "  - SHA256SUMS.sig (GPG signature)"
+    fi
+    log "  - VERIFY.md (verification instructions)"
+    log ""
     log "Next steps:"
     log "  1. Review the release notes in RELEASE_NOTES.md"
-    log "  2. Create a pull request to merge $branch_name into main"
-    log "  3. After merge, create a GitHub release from tag v${version}"
+    log "  2. Verify the security manifests are correct"
+    log "  3. Create a pull request to merge $branch_name into main"
+    log "  4. After merge, create a GitHub release from tag v${version}"
+    log "  5. Upload SHA256SUMS and SHA256SUMS.sig to the GitHub release"
 }
 
 # Run main function with all arguments
