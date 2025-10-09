@@ -49,44 +49,93 @@ check_gitversion() {
     fi
 }
 
-# Get clean semver from GitVersion AssemblySemVer output
-get_version() {
-    local assembly_version
-    assembly_version=$(gitversion -o AssemblySemVer)
-    
-    # Remove the trailing .0 and any % characters
-    local clean_version
-    clean_version=$(echo "$assembly_version" | sed 's/\.0$//' | tr -d '%')
-    
-    echo "$clean_version"
-}
-
-# Get full semver for tagging
-get_full_version() {
-    local full_version
-    full_version=$(gitversion | tr -d '%')
-    echo "$full_version"
-}
-
-# Create or switch to release branch
-create_release_branch() {
-    local version="$1"
-    local branch_name="release/v${version}"
-    
-    log "Checking if release branch exists: $branch_name"
-    
-    if git show-ref --verify --quiet "refs/heads/$branch_name"; then
-        warn "Release branch $branch_name already exists. Switching to it."
-        git checkout "$branch_name"
-    elif git show-ref --verify --quiet "refs/remotes/origin/$branch_name"; then
-        warn "Remote release branch $branch_name exists. Checking it out."
-        git checkout -b "$branch_name" "origin/$branch_name"
-    else
-        log "Creating new release branch: $branch_name"
-        git checkout -b "$branch_name"
+# Get version information from GitVersion JSON output
+get_version_info() {
+    if ! command -v gitversion >/dev/null 2>&1; then
+        error "gitversion command not found. Please install GitVersion or use the shell version."
+        exit 1
     fi
     
-    printf "%s" "$branch_name"
+    local json_output
+    json_output=$(gitversion -o json 2>/dev/null)
+    
+    if [[ $? -ne 0 || -z "$json_output" ]]; then
+        error "Failed to get version information from GitVersion"
+        exit 1
+    fi
+    
+    # Extract version components directly from GitVersion JSON fields
+    local major_minor_patch prerelease_tag full_semver major minor patch
+    
+    # Use jq if available, otherwise fall back to basic text processing
+    if command -v jq >/dev/null 2>&1; then
+        major_minor_patch=$(echo "$json_output" | jq -r '.MajorMinorPatch // empty')
+        prerelease_tag=$(echo "$json_output" | jq -r '.PreReleaseTag // empty')
+        full_semver=$(echo "$json_output" | jq -r '.SemVer // empty')
+        major=$(echo "$json_output" | jq -r '.Major // empty')
+        minor=$(echo "$json_output" | jq -r '.Minor // empty') 
+        patch=$(echo "$json_output" | jq -r '.Patch // empty')
+    else
+        # Fallback to basic text processing without jq
+        major_minor_patch=$(echo "$json_output" | grep '"MajorMinorPatch"' | sed 's/.*: *"\([^"]*\)".*/\1/')
+        prerelease_tag=$(echo "$json_output" | grep '"PreReleaseTag"' | sed 's/.*: *"\([^"]*\)".*/\1/')
+        full_semver=$(echo "$json_output" | grep '"SemVer"' | sed 's/.*: *"\([^"]*\)".*/\1/')
+        major=$(echo "$json_output" | grep '"Major"' | sed 's/.*: *\([0-9]*\).*/\1/')
+        minor=$(echo "$json_output" | grep '"Minor"' | sed 's/.*: *\([0-9]*\).*/\1/')
+        patch=$(echo "$json_output" | grep '"Patch"' | sed 's/.*: *\([0-9]*\).*/\1/')
+    fi
+    
+    # Validate that we got the essential fields
+    if [[ -z "$major_minor_patch" || -z "$full_semver" ]]; then
+        error "Failed to parse required version fields from GitVersion output"
+        error "MajorMinorPatch: '$major_minor_patch', SemVer: '$full_semver'"
+        exit 1
+    fi
+    
+    # Handle empty prerelease tag (convert to null for consistency)
+    if [[ -z "$prerelease_tag" || "$prerelease_tag" == "null" ]]; then
+        prerelease_tag=""
+    fi
+    
+    # Return values via global variables (bash doesn't return complex types easily)
+    VERSION_MAJOR="$major"
+    VERSION_MINOR="$minor" 
+    VERSION_PATCH="$patch"
+    VERSION_MAJOR_MINOR_PATCH="$major_minor_patch"
+    VERSION_PRERELEASE_TAG="$prerelease_tag"
+    VERSION_FULL_SEMVER="$full_semver"
+}
+
+# Create temporary release branch, get version, then rename based on actual GitVersion output
+create_and_rename_release_branch() {
+    local temp_branch="release/temp-$(date +%s)"
+    
+    log "Creating temporary release branch: $temp_branch"
+    git checkout -b "$temp_branch"
+    
+    log "Getting version information from new release branch context..."
+    # Now get the version info from the release branch context
+    get_version_info
+    
+    local version="$VERSION_MAJOR_MINOR_PATCH"
+    local final_branch="release/v${version}"
+    
+    log "GitVersion calculated version: $version on release branch"
+    log "Renaming branch from $temp_branch to: $final_branch"
+    git branch -m "$final_branch"
+    
+    # Check if remote branch already exists
+    if git ls-remote --exit-code --heads origin "$final_branch" >/dev/null 2>&1; then
+        warn "Remote branch $final_branch already exists"
+        read -p "Continue and force push? (y/N): " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            error "Aborted due to existing remote branch"
+            exit 1
+        fi
+    fi
+    
+    printf "%s" "$final_branch"
 }
 
 # Create security manifests (checksums and signatures)
@@ -358,19 +407,36 @@ $(if [[ -f "SHA256SUMS.sig" ]]; then echo "- GPG signature for authenticity veri
 
 # Tag the release
 tag_release() {
-    local version="$1"
-    local full_version="$2"
+    local version="$1"           # MajorMinorPatch (e.g., "0.0.2")
+    local full_version="$2"      # Full SemVer (e.g., "0.0.2-beta.1+1+98d9875")
+    local prerelease_tag="$3"    # PreReleaseTag (e.g., "beta.1")
+    
     local tag_name="v${version}"
     
-    log "Creating tag: $tag_name"
+    # For prerelease branches, include the prerelease tag in the tag name
+    if [[ -n "$prerelease_tag" ]]; then
+        tag_name="v${version}-${prerelease_tag}"
+        log "Creating prerelease tag: $tag_name"
+    else
+        log "Creating release tag: $tag_name"
+    fi
     
-    # Create annotated tag with full version info
-    git tag -a "$tag_name" -m "Release v${version}
+    # Create annotated tag with comprehensive information
+    local tag_message="Release v${version}"
+    if [[ -n "$prerelease_tag" ]]; then
+        tag_message="Pre-release v${version}-${prerelease_tag}"
+    fi
+    
+    git tag -a "$tag_name" -m "$tag_message
 
 Full version: ${full_version}
 Release date: $(date '+%Y-%m-%d %H:%M:%S %Z')
+Branch: $(git branch --show-current)
+Commit: $(git rev-parse HEAD)
 
-See RELEASE_NOTES.md for detailed changelog."
+Generated with GitVersion automation.
+See RELEASE_NOTES.md for detailed changelog.
+See SHA256SUMS for integrity verification."
 
     log "Pushing tag to origin"
     git push origin "$tag_name"
@@ -423,7 +489,6 @@ EOF
     
     # Pre-flight checks
     check_git_repo
-    check_gitversion
     
     # Check for uncommitted changes
     if [[ -n $(git status --porcelain) ]] && [[ "$force" == false ]]; then
@@ -432,43 +497,54 @@ EOF
         exit 1
     fi
     
-    # Get version information
-    local version
-    version=$(get_version)
-    local full_version
-    full_version=$(get_full_version)
-    
-    log "Detected version: $version (full: $full_version)"
-    
     if [[ "$dry_run" == true ]]; then
         log "DRY RUN MODE - No changes will be made"
-        log "Would create release branch: release/v${version}"
-        log "Would create RELEASE_NOTES.md"
+        log "Would create temporary release branch (release/temp-{timestamp})"
+        log "Would get GitVersion info from release branch context"
+        log "Would rename branch based on calculated version"
+        log "Would create RELEASE_NOTES.md and security manifests"
         log "Would commit and push changes"
-        log "Would create tag: v${version}"
+        log "Would create tag with prerelease info"
         exit 0
     fi
     
-    # Confirm with user
-    read -p "Create release v${version}? (y/N): " -n 1 -r
+    # Confirm with user before creating release branch
+    read -p "Create release from current branch? (y/N): " -n 1 -r
     echo
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
         log "Release creation cancelled"
         exit 0
     fi
     
-    # Execute release process
+    # Execute release process - create branch first, then get version info
     local branch_name
-    branch_name=$(create_release_branch "$version")
+    branch_name=$(create_and_rename_release_branch)
+    
+    # Version info is now available from the release branch context
+    local version="$VERSION_MAJOR_MINOR_PATCH"
+    local full_version="$VERSION_FULL_SEMVER"
+    local prerelease_tag="$VERSION_PRERELEASE_TAG"
+    
+    log "Final version information from release branch:"
+    log "  Major.Minor.Patch: $version"
+    log "  Full SemVer: $full_version" 
+    if [[ -n "$prerelease_tag" ]]; then
+        log "  PreRelease Tag: $prerelease_tag"
+    fi
     
     create_release_notes "$version" "$full_version"
     create_security_manifests "$version"
     commit_and_push "$version" "$branch_name"
-    tag_release "$version" "$full_version"
+    tag_release "$version" "$full_version" "$prerelease_tag"
     
-    success "Release v${version} created successfully!"
+    local tag_preview="v${version}"
+    if [[ -n "$prerelease_tag" ]]; then
+        tag_preview="v${version}-${prerelease_tag}"
+    fi
+    
+    success "Release $tag_preview created successfully!"
     log "Release branch: $branch_name"
-    log "Tag: v${version}"
+    log "Tag: $tag_preview"
     log ""
     log "Security files created:"
     log "  - SHA256SUMS (checksums for all files)"
@@ -481,7 +557,7 @@ EOF
     log "  1. Review the release notes in RELEASE_NOTES.md"
     log "  2. Verify the security manifests are correct"
     log "  3. Create a pull request to merge $branch_name into main"
-    log "  4. After merge, create a GitHub release from tag v${version}"
+    log "  4. After merge, create a GitHub release from tag $tag_preview"
     log "  5. Upload SHA256SUMS and SHA256SUMS.sig to the GitHub release"
 }
 
