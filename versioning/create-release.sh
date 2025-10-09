@@ -520,6 +520,9 @@ EOF
     local branch_name
     branch_name=$(create_and_rename_release_branch)
     
+    # Re-get version info to ensure variables are set in current scope
+    get_version_info
+    
     # Version info is now available from the release branch context
     local version="$VERSION_MAJOR_MINOR_PATCH"
     local full_version="$VERSION_FULL_SEMVER"
