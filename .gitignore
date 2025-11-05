@@ -36,3 +36,18 @@ npm-debug.log
 secrets/
 *.bak
 .aider*
+
+# ClamAV CVD Mirror - Config & Data Files
+**/config.json
+**/s3_config.json
+**/*.cvd
+**/*.cld
+**/*.cdiff
+**/*.dat
+**/*.sign
+**/.cvdupdate/
+**/databases/
+**/state.json
+**/freshclam.conf
+**/freshclam.log
+**/update_*.log

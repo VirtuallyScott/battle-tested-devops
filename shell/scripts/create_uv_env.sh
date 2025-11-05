@@ -53,7 +53,7 @@ init_project_files() {
     log ".env already exists — ensuring permissions..."
     chmod 600 .env
   fi
-  
+
   if [ ! -f requirements.txt ]; then
     touch requirements.txt
     log "Created empty requirements.txt"

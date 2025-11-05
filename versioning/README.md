@@ -35,7 +35,7 @@ Provides consistent semantic versioning across CI/CD platforms using GitVersion 
 # Bump minor version
 ./versioning/bump-version.sh minor
 
-# Bump major version 
+# Bump major version
 ./versioning/bump-version.sh major
 
 # Example output:

@@ -84,14 +84,14 @@ download_file() {
   local src="$1"
   local dest="$2"
   local url="${REPO_URL}/${src}"
-  
+
   log "Downloading $url to $dest"
-  
+
   # Try downloading with verbose error reporting
   if ! curl -sSL -f "$url" -o "$dest" 2>> "$LOG_FILE"; then
     log "Curl failed with URL: $url"
     log "Trying alternative path..."
-    
+
     # Try alternative path without scripts/ prefix
     local alt_src="${src#scripts/}"
     if [[ "$alt_src" != "$src" ]]; then
@@ -104,7 +104,7 @@ download_file() {
       error_exit "Failed to download $url\nCheck if file exists at: ${REPO_BASE}/tree/${REPO_BRANCH}/${src}"
     fi
   fi
-  
+
   # Verify the downloaded file isn't an HTML error page
   if [[ -f "$dest" ]] && (head -1 "$dest" | grep -q "<html"); then
     rm -f "$dest"
@@ -125,18 +125,18 @@ create_secure_dir() {
 # Install zsh config files
 install_zsh_configs() {
   local zsh_dir="$HOME"
-  
+
   # Backup existing files
   backup_file "$zsh_dir/.zshrc"
   backup_file "$zsh_dir/.zlogout"
-  
+
   # Download new files
   download_file "zshc/.zshrc" "$zsh_dir/.zshrc"
   download_file "zshc/.zlogout" "$zsh_dir/.zlogout"
-  
+
   chmod 644 "$zsh_dir/.zshrc"
   chmod 644 "$zsh_dir/.zlogout"
-  
+
   success "Installed zsh config files"
 }
 
@@ -144,14 +144,14 @@ install_zsh_configs() {
 install_scripts() {
   local scripts_dir="$HOME/scripts"
   create_secure_dir "$scripts_dir"
-  
+
   # List of scripts to install
   local scripts=(
     "scripts/fix_permissions.sh"
     "scripts/create_uv_env.sh"
     "scripts/refresh_scripts.sh"
   )
-  
+
   for script in "${scripts[@]}"; do
     local script_name=$(basename "$script")
     download_file "$script" "$scripts_dir/$script_name"
@@ -159,7 +159,7 @@ install_scripts() {
     chmod 700 "$scripts_dir/$script_name"
     log "Installed script $script_name with permissions 700"
   done
-  
+
   success "Installed scripts to $scripts_dir"
 }
 
@@ -172,7 +172,7 @@ init_secure_env() {
   local block_end="# <<< secure env loader <<<"
 
   create_secure_dir "$env_dir"
-  
+
   # Create secrets file with instructions
   if [ ! -f "$env_file" ]; then
     cat <<EOF > "$env_file"
@@ -209,7 +209,7 @@ EOF
 create_env_dirs() {
   create_secure_dir "$HOME/.env"
   init_secure_env
-  
+
   success "Created and configured secure environment directories"
 }
 
@@ -217,14 +217,14 @@ create_env_dirs() {
 main() {
   log "Starting misc installation"
   check_dependencies
-  
+
   install_zsh_configs
   install_scripts
   create_env_dirs
-  
+
   success "Installation completed successfully!"
   log "Details logged to $LOG_FILE"
-  
+
   echo -e "\n${GREEN}Next steps:${NC}"
   echo "1. Review the installed files"
   echo "2. Restart your shell or run: source ~/.zshrc"

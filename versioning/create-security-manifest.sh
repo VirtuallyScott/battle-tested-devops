@@ -59,13 +59,13 @@ generate_checksums() {
     local output_dir="$1"
     local include_binaries="$2"
     local checksums_file="${output_dir}/SHA256SUMS"
-    
+
     log "Generating SHA256 checksums..."
-    
+
     # Base file patterns (text files, scripts, configs)
     local file_patterns=(
         -name "*.sh"
-        -name "*.py" 
+        -name "*.py"
         -name "*.go"
         -name "*.json"
         -name "*.yml"
@@ -85,12 +85,12 @@ generate_checksums() {
         -name "COPYING*"
         -name "*.license"
     )
-    
+
     # Add binary patterns if requested
     if [[ "$include_binaries" == true ]]; then
         file_patterns+=(
             -name "*.tar.gz"
-            -name "*.zip" 
+            -name "*.zip"
             -name "*.deb"
             -name "*.rpm"
             -name "*.dmg"
@@ -99,7 +99,7 @@ generate_checksums() {
             -name "*.pkg"
         )
     fi
-    
+
     # Create find command with OR conditions
     local find_cmd="find . -type f \\("
     for ((i=0; i<${#file_patterns[@]}; i++)); do
@@ -109,10 +109,10 @@ generate_checksums() {
         fi
     done
     find_cmd+=" \\) ! -path './.git/*' ! -path './build/*' ! -path './scans/*' ! -path './node_modules/*' ! -path './vendor/*'"
-    
+
     # Execute find and generate checksums
     eval "$find_cmd" | sort | xargs sha256sum > "$checksums_file"
-    
+
     local file_count
     file_count=$(wc -l < "$checksums_file")
     success "Generated checksums for $file_count files in $checksums_file"
@@ -125,12 +125,12 @@ create_gpg_signature() {
     local no_sign="$3"
     local checksums_file="${output_dir}/SHA256SUMS"
     local signature_file="${output_dir}/SHA256SUMS.sig"
-    
+
     if [[ "$no_sign" == true ]]; then
         log "Skipping GPG signing as requested"
         return 0
     fi
-    
+
     if ! command -v gpg >/dev/null 2>&1; then
         if [[ "$force_sign" == true ]]; then
             error "GPG not available but signing was forced"
@@ -140,15 +140,15 @@ create_gpg_signature() {
             return 0
         fi
     fi
-    
+
     local gpg_key_id
     gpg_key_id=$(git config --get user.signingkey 2>/dev/null || echo "")
-    
+
     if [[ -z "$gpg_key_id" ]]; then
         # Try to find a GPG key automatically
         local available_keys
         available_keys=$(gpg --list-secret-keys --with-colons | grep '^sec:' | cut -d: -f5 | head -1)
-        
+
         if [[ -n "$available_keys" ]]; then
             gpg_key_id="$available_keys"
             warn "No signing key configured, using available key: $gpg_key_id"
@@ -164,11 +164,11 @@ create_gpg_signature() {
             fi
         fi
     fi
-    
+
     log "Creating GPG signature with key: $gpg_key_id"
     if gpg --detach-sign --armor --local-user "$gpg_key_id" --output "$signature_file" "$checksums_file" 2>/dev/null; then
         success "Created GPG signature: $signature_file"
-        
+
         # Display key info for verification
         log "GPG key fingerprint:"
         gpg --fingerprint "$gpg_key_id" | grep -A1 "pub"
@@ -187,9 +187,9 @@ create_verification_docs() {
     local output_dir="$1"
     local has_signature="$2"
     local verify_file="${output_dir}/VERIFY.md"
-    
+
     log "Creating verification documentation..."
-    
+
     cat > "$verify_file" << EOF
 # Security Verification Guide
 
@@ -250,7 +250,7 @@ fi)
 ### For Users
 
 1. **Always verify checksums** before using downloaded files
-2. **Check GPG signatures** when available to ensure authenticity  
+2. **Check GPG signatures** when available to ensure authenticity
 3. **Verify key fingerprints** through multiple independent sources
 4. **Use HTTPS** when downloading files
 5. **Keep verification files** for audit trails
@@ -341,7 +341,7 @@ main() {
     local include_binaries=false
     local force_sign=false
     local no_sign=false
-    
+
     # Parse arguments
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -372,36 +372,36 @@ main() {
                 ;;
         esac
     done
-    
+
     # Validate conflicting options
     if [[ "$force_sign" == true && "$no_sign" == true ]]; then
         error "Cannot use both --sign and --no-sign options"
         exit 1
     fi
-    
+
     # Create output directory if it doesn't exist
     if [[ ! -d "$output_dir" ]]; then
         log "Creating output directory: $output_dir"
         mkdir -p "$output_dir"
     fi
-    
+
     log "Generating security manifests in: $output_dir"
-    
+
     # Generate checksums
     generate_checksums "$output_dir" "$include_binaries"
-    
+
     # Create GPG signature
     create_gpg_signature "$output_dir" "$force_sign" "$no_sign"
-    
+
     # Check if signature was created
     local has_signature=false
     if [[ -f "${output_dir}/SHA256SUMS.sig" ]]; then
         has_signature=true
     fi
-    
+
     # Create verification documentation
     create_verification_docs "$output_dir" "$has_signature"
-    
+
     # Summary
     log "Security manifest generation complete!"
     log "Files created in $output_dir:"
@@ -410,7 +410,7 @@ main() {
         log "  - SHA256SUMS.sig (GPG signature)"
     fi
     log "  - VERIFY.md (verification guide)"
-    
+
     log ""
     log "Quick verification test:"
     log "  cd $output_dir && sha256sum -c SHA256SUMS"

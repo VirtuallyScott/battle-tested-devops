@@ -27,12 +27,12 @@ check_dependencies() {
       echo "[DEBUG] Found $tool: $(command -v "$tool")"
     fi
   done
-  
+
   if [ $missing -ne 0 ]; then
     echo "[!] One or more required tools are missing. Please install them."
     return 1
   fi
-  
+
   # If all tools are available, execute the scans
   echo "[DEBUG] All dependencies found, proceeding with scans"
   execute_scans
@@ -41,9 +41,9 @@ check_dependencies() {
 
 execute_scans() {
   local any_errors=0
-  
+
   echo "[DEBUG] About to check tool conditions: tool='$TOOL'"
-  
+
   if [[ "$TOOL" == "trivy" || "$TOOL" == "both" ]]; then
     echo "[DEBUG] Condition matched for Trivy - about to call run_trivy"
     echo "[DEBUG] Parameters: actual_format='$ACTUAL_FORMAT', scan_dir='$SCAN_DIR', output='$OUTPUT'"
@@ -67,7 +67,7 @@ execute_scans() {
   else
     echo "[DEBUG] Skipping Checkov scan (tool='$TOOL')"
   fi
-  
+
   echo "[DEBUG] Finished all scan attempts"
   return $any_errors
 }
@@ -111,7 +111,7 @@ run_trivy() {
   local output_basename="./scans/${epoch}__trivy_${scan_dir}"
 
   echo "[*] Running Trivy IaC scan on directory: $(pwd)"
-  
+
   if ! trivy config . --format "$format" --output "${output_basename}.${format}" --quiet 2>/dev/null; then
     echo "[!] Trivy scan failed"
     return 1
