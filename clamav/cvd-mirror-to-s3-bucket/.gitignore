@@ -1,0 +1,139 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+.env
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# ClamAV specific files
+*.cvd
+*.cld
+*.dat
+*.inc
+freshclam.log
+
+# CVD Update directories and files
+.cvdupdate/
+databases/
+logs/
+state.json
+config.json
+s3_config.json
+
+# ClamAV database files (all variants)
+*.cvd
+*.cld
+*.cdiff
+*.dat
+*.sign
+*.inc
+freshclam.log
+freshclam.conf
+
+# AWS credentials (if accidentally placed here)
+.aws/
+credentials
+config
+aws_credentials
+aws_config
+
+# Log files
+*.log
+*.log.*
+logs/
+log/
+
+# Security baseline and reports
+.secrets.baseline
+bandit-report.json
+safety-report.json
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~

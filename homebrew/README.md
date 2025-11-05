@@ -40,7 +40,7 @@ chmod +x install_brew_packages.sh
 ### Role-Specific Packages
 Each role has its own package list file following this naming convention:
 - `brewList-devops.txt`
-- `brewList-qa-engineer.txt` 
+- `brewList-qa-engineer.txt`
 - `brewList-cloud-engineer.txt`
 
 To add a new role:

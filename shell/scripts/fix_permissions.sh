@@ -15,7 +15,7 @@ log() {
 
 fix_permissions() {
     local errors=0
-    
+
     # Process directories
     for dir_perm in \
         "$HOME/.ssh:700" \
@@ -24,12 +24,12 @@ fix_permissions() {
     do
         dir="${dir_perm%:*}"
         perm="${dir_perm#*:}"
-        
+
         if [ ! -d "$dir" ]; then
             echo "${YELLOW}Directory $dir does not exist - skipping${NC}"
             continue
         fi
-        
+
         current_perm=$(stat -f "%A" "$dir" 2>/dev/null || echo "000")
         if [ "$current_perm" != "$perm" ]; then
             log "Setting $dir permissions to $perm"
@@ -39,7 +39,7 @@ fix_permissions() {
             fi
         fi
     done
-    
+
     # Process files
     for file_perm in \
         "$HOME/.ssh/id_rsa:600" \
@@ -52,12 +52,12 @@ fix_permissions() {
     do
         file="${file_perm%:*}"
         perm="${file_perm#*:}"
-        
+
         if [ ! -f "$file" ]; then
             echo "${YELLOW}File $file does not exist - skipping${NC}"
             continue
         fi
-        
+
         current_perm=$(stat -f "%A" "$file" 2>/dev/null || echo "000")
         if [ "$current_perm" != "$perm" ]; then
             log "Setting $file permissions to $perm"
@@ -67,13 +67,13 @@ fix_permissions() {
             fi
         fi
     done
-    
+
     return $errors
 }
 
 main() {
     log "Starting permission fixes..."
-    
+
     if fix_permissions; then
         echo "${GREEN}All permissions verified and corrected successfully${NC}"
     else
