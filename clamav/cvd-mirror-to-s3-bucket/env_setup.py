@@ -22,7 +22,7 @@ def get_cvd_command():
     """Get the correct cvd command path."""
     venv_path = get_venv_path()
     cvd_path = venv_path / 'bin' / 'cvd'
-    
+
     if cvd_path.exists():
         return str(cvd_path)
     else:
@@ -41,15 +41,15 @@ def get_python_command():
 def setup_environment():
     """Set up the environment for running cvdupdate commands."""
     venv_path = get_venv_path()
-    
+
     # Add virtual environment bin to PATH
     venv_bin = str(venv_path / 'bin')
     current_path = os.environ.get('PATH', '')
-    
+
     if venv_bin not in current_path:
         os.environ['PATH'] = f"{venv_bin}:{current_path}"
-    
+
     # Set VIRTUAL_ENV
     os.environ['VIRTUAL_ENV'] = str(venv_path)
-    
+
     return True

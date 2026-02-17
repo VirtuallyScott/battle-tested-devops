@@ -35,7 +35,7 @@
 ### GitFlow Workflow
 - Configured via `gitversion.json` with branch-specific strategies
 - develop = alpha versions
-- release = beta versions  
+- release = beta versions
 - main = stable releases
 - Automated version calculation and branch management
 

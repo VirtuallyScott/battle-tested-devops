@@ -58,7 +58,7 @@ cd gitversion-sh/tests && ./run_tests.sh  # Comprehensive test suite
 ./iac_wrapper/iac_scanner.sh -t both -o json    # Trivy + Checkov
 ./iac_wrapper/iac_scanner.sh -t trivy -o html   # HTML reports
 
-# Web app scanning  
+# Web app scanning
 ./security/OWASP_ZAP/zap_full_scan.sh -u https://example.com -f json
 ```
 
@@ -107,7 +107,7 @@ cd gitversion-sh/tests && ./run_tests.sh  # Comprehensive test suite
 
 ### Key Files to Reference
 - `gitversion.json`: Root GitVersion configuration
-- `gitversion-go/Makefile`: Go build patterns and quality checks  
+- `gitversion-go/Makefile`: Go build patterns and quality checks
 - `gitversion-sh/tests/run_tests.sh`: Shell testing methodology
 - `versioning/create-release.sh`: Automated release process with security
 - `iac_wrapper/iac_scanner.sh`: Multi-tool security scanning patterns

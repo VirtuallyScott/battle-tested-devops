@@ -1,0 +1,35 @@
+# Ansible Inventory
+# Best practice: Use YAML format for complex inventories
+# This is INI format for simplicity
+
+# Data Center servers
+[dcs]
+dc0 ansible_host=dc0.local
+dc1 ansible_host=dc1.local
+
+# Workstations
+[workstations]
+nubuntu0 ansible_host=nubuntu0.local
+
+# All NUCs group (includes both DCs and workstations)
+[all_nucs:children]
+dcs
+workstations
+
+# Group variables can be defined in group_vars/
+# Example: group_vars/dcs.yml, group_vars/workstations.yml
+
+# Common variables for all NUCs
+[all_nucs:vars]
+ansible_user=ansible
+ansible_python_interpreter=/usr/bin/python3
+
+# Data center specific variables
+[dcs:vars]
+datacenter_role=true
+deploy_environment=lab
+
+# Workstation specific variables
+[workstations:vars]
+workstation_role=true
+deploy_environment=desktop

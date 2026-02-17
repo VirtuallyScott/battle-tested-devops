@@ -124,7 +124,7 @@ echo "<details><summary>WHOIS IPs</summary><pre>$WHOIS_IP</pre></details>"
 echo "<details><summary>Ping</summary><pre>$PING_RESULT</pre></details>"
 
 echo "<details><summary>Subdomains</summary><ul>"
-for s in "${SUBDOMAINS[@]}"; do echo "<li>$s</li>"; done
+for s in "${SUBDOMAINS[@]+"${SUBDOMAINS[@]}"}"; do echo "<li>$s</li>"; done
 echo "</ul></details>"
 
 echo "<details><summary>SPF</summary><pre>$SPF</pre></details>"
@@ -135,15 +135,15 @@ echo "<details><summary>TLS/SSL - $DOMAIN</summary><pre>${SSL_DOMAIN:0:1500}...<
 echo "<details><summary>TLS/SSL - www.$DOMAIN</summary><pre>${SSL_WWW:0:1500}...</pre></details>"
 
 echo "<details><summary>MX IPs</summary><ul>"
-for m in "${MX_IPS[@]}"; do echo "<li>$m</li>"; done
+for m in "${MX_IPS[@]+"${MX_IPS[@]}"}"; do echo "<li>$m</li>"; done
 echo "</ul></details>"
 
 echo "<details><summary>SMTP Results</summary><ul>"
-for r in "${SMTP_RESULTS[@]}"; do echo "<li><pre>${r:0:300}...</pre></li>"; done
+for r in "${SMTP_RESULTS[@]+"${SMTP_RESULTS[@]}"}"; do echo "<li><pre>${r:0:300}...</pre></li>"; done
 echo "</ul></details>"
 
 echo "<details><summary>WHOIS for MX IPs</summary><ul>"
-for w in "${WHOIS_MX_IPS[@]}"; do echo "<li><pre>${w:0:300}...</pre></li>"; done
+for w in "${WHOIS_MX_IPS[@]+"${WHOIS_MX_IPS[@]}"}"; do echo "<li><pre>${w:0:300}...</pre></li>"; done
 echo "</ul></details>"
 
 echo "</body></html>"

@@ -1,0 +1,39 @@
+---
+# Variables specific to workstation hosts
+# Applied to hosts in the workstations group
+
+# Environment designation
+deploy_environment: desktop
+workstation_role: true
+
+# Workstation-specific packages
+workstation_packages:
+  - firefox
+  - chromium-browser
+  - code
+  - terminator
+  - keepassxc
+
+# Desktop environment
+desktop_environment: ubuntu-desktop
+
+# Development tools
+dev_tools:
+  - git
+  - python3
+  - python3-pip
+  - nodejs
+  - npm
+  - build-essential
+
+# GUI settings
+enable_auto_login: false
+screensaver_timeout: 600  # 10 minutes
+
+# Update policy
+auto_updates: true
+update_schedule: "0 3 * * 0"  # Weekly on Sunday at 3 AM
+
+# Resource settings (less restrictive for workstations)
+max_cpu_percent: 95
+max_memory_percent: 90

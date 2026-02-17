@@ -1,0 +1,43 @@
+# Ansible runtime files
+*.retry
+ansible.log
+*.log
+
+# Temporary files
+tmp/
+.tmp/
+*.tmp
+
+# Fact cache
+/tmp/ansible_facts/
+
+# SSH control sockets
+ansible-ssh-*
+
+# Vault password files
+.vault_pass
+.vault_password
+vault_password.txt
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

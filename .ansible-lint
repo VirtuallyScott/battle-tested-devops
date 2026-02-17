@@ -1,0 +1,44 @@
+---
+# Ansible Lint Configuration
+# Custom rules location: tools/lint-rules
+
+# Enable strict mode
+strict: true
+
+# Use custom rules
+rulesdir:
+  - tools/lint-rules/
+
+# Skip specific rules if needed (currently none skipped)
+skip_list: []
+
+# Warn list - rules that generate warnings instead of errors
+warn_list:
+  - experimental
+  - role-name[path]  # Allow flexible role paths during development
+
+# Exclude paths
+exclude_paths:
+  - .cache/
+  - .git/
+  - .github/
+  - venv/
+  - '*.pyc'
+  - __pycache__/
+
+# Ansible specific settings
+kinds:
+  - playbook: "ansible/playbooks/*.{yml,yaml}"
+  - tasks: "ansible/playbooks/tasks/*.{yml,yaml}"
+  - vars: "ansible/playbooks/vars/*.{yml,yaml}"
+  - handlers: "ansible/playbooks/handlers/*.{yml,yaml}"
+
+# Mock modules and roles for linting
+mock_modules: []
+mock_roles: []
+
+# Enable offline mode to avoid downloading roles during lint
+offline: false
+
+# Profile to use (null means all rules)
+profile: null

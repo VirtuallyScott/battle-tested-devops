@@ -39,9 +39,9 @@ Examples:
   %(prog)s schedule --cron           # Generate cron entry
         """
     )
-    
+
     subparsers = parser.add_subparsers(dest='command', help='Available commands')
-    
+
     # Update command
     update_parser = subparsers.add_parser('update', help='Update ClamAV databases')
     update_parser.add_argument('-v', '--verbose', action='store_true',
@@ -50,7 +50,7 @@ Examples:
                               help='List current databases')
     update_parser.add_argument('-c', '--config', action='store_true',
                               help='Show current configuration')
-    
+
     # Serve command
     serve_parser = subparsers.add_parser('serve', help='Start HTTP mirror server')
     serve_parser.add_argument('-p', '--port', type=int, default=8000,
@@ -59,32 +59,32 @@ Examples:
                              help='Enable verbose output')
     serve_parser.add_argument('--check', action='store_true',
                              help='Check database directory and exit')
-    
+
     # Config command
     config_parser = subparsers.add_parser('config', help='Manage configuration')
     config_subparsers = config_parser.add_subparsers(dest='config_command')
-    
+
     config_subparsers.add_parser('show', help='Show current configuration')
-    
+
     dbdir_parser = config_subparsers.add_parser('set-dbdir', help='Set database directory')
     dbdir_parser.add_argument('directory', help='Database directory path')
-    
+
     logdir_parser = config_subparsers.add_parser('set-logdir', help='Set log directory')
     logdir_parser.add_argument('directory', help='Log directory path')
-    
+
     ns_parser = config_subparsers.add_parser('set-nameserver', help='Set DNS nameserver')
     ns_parser.add_argument('nameserver', help='DNS nameserver IP')
-    
+
     add_parser = config_subparsers.add_parser('add-database', help='Add custom database')
     add_parser.add_argument('name', help='Database name (e.g., linux.cvd)')
     add_parser.add_argument('url', help='Database URL')
-    
+
     config_subparsers.add_parser('list', help='List configured databases')
     config_subparsers.add_parser('backup', help='Backup configuration')
-    
+
     config_parser.add_argument('-v', '--verbose', action='store_true',
                               help='Enable verbose output')
-    
+
     # Schedule command
     schedule_parser = subparsers.add_parser('schedule', help='Schedule database updates')
     schedule_parser.add_argument('-i', '--interval', type=int, default=4,
@@ -97,13 +97,13 @@ Examples:
                                 help='Generate cron entry and exit')
     schedule_parser.add_argument('--once', action='store_true',
                                 help='Run update once and exit')
-    
+
     args = parser.parse_args()
-    
+
     if not args.command:
         parser.print_help()
         sys.exit(1)
-    
+
     # Route to appropriate module
     if args.command == 'update':
         # Call update_databases module
@@ -114,9 +114,9 @@ Examples:
             sys.argv.append('-l')
         if args.config:
             sys.argv.append('-c')
-        
+
         update_databases.main()
-    
+
     elif args.command == 'serve':
         # Call serve_mirror module
         sys.argv = ['serve_mirror.py']
@@ -126,18 +126,18 @@ Examples:
             sys.argv.append('-v')
         if args.check:
             sys.argv.append('--check')
-        
+
         serve_mirror.main()
-    
+
     elif args.command == 'config':
         # Call config_manager module
         sys.argv = ['config_manager.py']
         if args.verbose:
             sys.argv.append('-v')
-        
+
         if args.config_command:
             sys.argv.append(args.config_command)
-            
+
             # Add arguments based on subcommand
             if args.config_command == 'set-dbdir':
                 sys.argv.append(args.directory)
@@ -147,9 +147,9 @@ Examples:
                 sys.argv.append(args.nameserver)
             elif args.config_command == 'add-database':
                 sys.argv.extend([args.name, args.url])
-        
+
         config_manager.main()
-    
+
     elif args.command == 'schedule':
         # Call schedule_updates module
         sys.argv = ['schedule_updates.py']
@@ -163,7 +163,7 @@ Examples:
             sys.argv.append('--cron')
         if args.once:
             sys.argv.append('--once')
-        
+
         schedule_updates.main()
 
 

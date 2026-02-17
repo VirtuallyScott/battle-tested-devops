@@ -1,0 +1,47 @@
+---
+# Example playbook: Ping all NUC hosts and gather facts
+# Usage: ansible-playbook playbooks/ping-nucs.yml
+
+- name: Verify connectivity to all NUC hosts
+  hosts: all_nucs
+  gather_facts: true
+  
+  tasks:
+    - name: Ping test
+      ansible.builtin.ping:
+      
+    - name: Display hostname
+      ansible.builtin.debug:
+        msg: "Successfully connected to {{ ansible_hostname }} ({{ ansible_distribution }} {{ ansible_distribution_version }})"
+      
+    - name: Show group membership
+      ansible.builtin.debug:
+        msg: "Host {{ inventory_hostname }} is in groups: {{ group_names }}"
+      
+    - name: Verify Python version
+      ansible.builtin.command:
+        cmd: python3 --version
+      register: python_version
+      changed_when: false
+      
+    - name: Display Python version
+      ansible.builtin.debug:
+        msg: "{{ python_version.stdout }}"
+
+- name: Data Center specific tasks
+  hosts: dcs
+  gather_facts: false
+  
+  tasks:
+    - name: Show DC-specific variables
+      ansible.builtin.debug:
+        msg: "This is a data center server in {{ deploy_environment }} environment"
+
+- name: Workstation specific tasks
+  hosts: workstations
+  gather_facts: false
+  
+  tasks:
+    - name: Show workstation-specific variables
+      ansible.builtin.debug:
+        msg: "This is a workstation in {{ deploy_environment }} environment"

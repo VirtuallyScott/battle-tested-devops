@@ -1,53 +1,92 @@
-# Terraform
-.terraform/
-*.tfstate
-*.tfstate.backup
-crash.log
-*.tfvars
-override.tf
-override.tf.json
-*_override.tf
-*.plan
+# Ansible
+*.retry
+ansible.log
+**/.ansible/
+**/ansible_facts/
+**/tmp/ansible-ssh-*
 
-# Python
-__pycache__/
-*.py[cod]
-*.egg-info/
+# ClamAV CVD Mirror - Config & Data Files
+**/*.cdiff
+**/*.cld
+**/*.cvd
+**/*.dat
+**/*.sign
+**/.cvdupdate/
+**/config.json
+**/databases/
+**/freshclam.conf
+**/freshclam.log
+**/s3_config.json
+**/state.json
+**/update_*.log
+
+# Docker
+*.log
+*.tar
+
+# General
+*.bak
+.aider*
+.env
+.env.*
+secrets/
+
+# IDEs & Editors
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Mac/OS
+.DS_Store
+Thumbs.db
 
 # Node
 node_modules/
 npm-debug.log
+package-lock.json
+yarn.lock
 
-# VSCode & IDEs
-.vscode/
-.idea/
-*.swp
+# Python
+*.egg
+*.egg-info/
+*.py[cod]
+*.so
+*$py.class
+__pycache__/
+.Python
+.pytest_cache/
+.coverage
+.tox/
+.mypy_cache/
+.ipynb_checkpoints/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+htmlcov/
+lib/
+lib64/
+parts/
+pip-log.txt
+pip-delete-this-directory.txt
+sdist/
+var/
+venv/
+ENV/
+env/
+*.manifest
+*.spec
 
-# Mac
-.DS_Store
-
-# Docker
-*.tar
-*.log
-
-# General
-.env
-.env.*
-secrets/
-*.bak
-.aider*
-
-# ClamAV CVD Mirror - Config & Data Files
-**/config.json
-**/s3_config.json
-**/*.cvd
-**/*.cld
-**/*.cdiff
-**/*.dat
-**/*.sign
-**/.cvdupdate/
-**/databases/
-**/state.json
-**/freshclam.conf
-**/freshclam.log
-**/update_*.log
+# Terraform
+*.plan
+*.tfstate
+*.tfstate.backup
+*.tfvars
+*_override.tf
+.terraform/
+crash.log
+override.tf
+override.tf.json

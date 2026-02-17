@@ -26,12 +26,12 @@ def check_setup():
         print("❌ Virtual environment not found!")
         print("Please run: python3 setup_installer.py")
         return False
-    
+
     python_cmd = get_python_command()
     if not Path(python_cmd).exists():
         print("❌ Python interpreter not found in virtual environment!")
         return False
-    
+
     print("✅ Environment looks good!")
     return True
 
@@ -40,13 +40,13 @@ def run_script_interactive(script_name, args=None):
     """Run a script interactively."""
     if args is None:
         args = []
-    
+
     python_cmd = get_python_command()
     cmd = [python_cmd, script_name] + args
-    
+
     print(f"\n🚀 Running: {' '.join(cmd)}")
     print("-" * 50)
-    
+
     try:
         subprocess.run(cmd, check=False)
         print("-" * 50)
@@ -73,10 +73,10 @@ def show_menu():
         print("10. 📖 Show help")
         print("0. ❌ Exit")
         print()
-        
+
         try:
             choice = input("Choose an option (0-10): ").strip()
-            
+
             if choice == "0":
                 print("👋 Goodbye!")
                 break
@@ -109,7 +109,7 @@ def show_menu():
                 show_help()
             else:
                 print("❌ Invalid choice. Please try again.")
-                
+
         except KeyboardInterrupt:
             print("\n👋 Goodbye!")
             break
@@ -132,10 +132,10 @@ def show_config_menu():
         print("7. 💾 Backup configuration")
         print("0. ⬅️  Back to main menu")
         print()
-        
+
         try:
             choice = input("Choose an option (0-7): ").strip()
-            
+
             if choice == "0":
                 break
             elif choice == "1":
@@ -163,7 +163,7 @@ def show_config_menu():
                 run_script_interactive("config_manager.py", ["backup"])
             else:
                 print("❌ Invalid choice. Please try again.")
-                
+
         except KeyboardInterrupt:
             break
         except EOFError:
@@ -197,22 +197,22 @@ def show_help():
     print("- Each script supports --help for detailed options")
     print("- See README.md for comprehensive documentation")
     print("- Visit https://github.com/Cisco-Talos/cvdupdate for upstream docs")
-    
+
     input("\nPress Enter to return to menu...")
 
 
 def main():
     """Main function."""
     print_banner()
-    
+
     if not check_setup():
         sys.exit(1)
-    
+
     # Quick status check
     print("🔍 Quick status check...")
     python_cmd = get_python_command()
     try:
-        result = subprocess.run([python_cmd, "monitor.py", "--health"], 
+        result = subprocess.run([python_cmd, "monitor.py", "--health"],
                               capture_output=True, text=True, timeout=10)
         if result.returncode == 0:
             print("✅ System appears healthy")
@@ -220,10 +220,10 @@ def main():
             print("⚠️  System needs attention (check status for details)")
     except Exception as e:
         print(f"⚠️  Could not check status: {e}")
-    
+
     print("\nWelcome to the ClamAV Database Management System!")
     print("Use the menu below to manage your databases.")
-    
+
     show_menu()
 
 

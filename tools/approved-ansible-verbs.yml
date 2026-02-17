@@ -1,0 +1,42 @@
+---
+# Approved Ansible Playbook Verbs
+# Source of truth for playbook naming validation
+# Inspired by PowerShell verb-noun discipline
+# See: ~/Downloads/ansible_naming_standard.md
+
+approved_verbs:
+  - apply
+  - audit
+  - bootstrap
+  - build
+  - cleanup
+  - configure
+  - create
+  - deploy
+  - destroy
+  - disable
+  - enable
+  - harden
+  - initialize
+  - install
+  - migrate
+  - promote
+  - publish
+  - register
+  - remove
+  - rotate
+  - sync
+  - test
+  - update
+  - upgrade
+  - validate
+  - verify
+
+# Verbs to avoid (for reference)
+avoid_verbs:
+  - do
+  - fix
+  - misc
+  - run
+  - stuff
+  - temp

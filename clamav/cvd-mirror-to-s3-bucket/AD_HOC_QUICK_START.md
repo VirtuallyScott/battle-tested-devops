@@ -130,7 +130,7 @@ S3_BUCKET_NAME=your-bucket-name S3_REGION=us-west-2 .venv/bin/python s3_sync.py 
 
 ### FreshClam Diff Files (CLD format)
 - `main.cld` - Compressed local database
-- `daily.cld` - Compressed daily updates  
+- `daily.cld` - Compressed daily updates
 - `bytecode.cld` - Compressed bytecode
 - `freshclam.dat` - FreshClam metadata
 - `mirrors.dat` - Mirror configuration

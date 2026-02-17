@@ -31,19 +31,19 @@ def get_config_data():
     try:
         setup_environment()
         cvd_cmd = get_cvd_command()
-        
+
         if isinstance(cvd_cmd, list):
             cmd = cvd_cmd + ['config', 'show']
         else:
             cmd = [cvd_cmd, 'config', 'show']
-        
+
         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-        
+
         # Parse configuration
         config = {}
         lines = result.stdout.split('\n')
         in_config = False
-        
+
         for line in lines:
             if 'Config:' in line:
                 in_config = True
@@ -51,13 +51,13 @@ def get_config_data():
             elif 'State file:' in line:
                 in_config = False
                 continue
-            
+
             if in_config and ':' in line:
                 key, value = line.split(':', 1)
                 key = key.strip().strip('"')
                 value = value.strip().strip('",')
                 config[key] = value
-        
+
         return config
     except Exception as e:
         return {}
@@ -69,13 +69,13 @@ def get_state_data():
         config = get_config_data()
         state_file = config.get('state file', '~/.cvdupdate/state.json')
         state_path = Path(state_file).expanduser()
-        
+
         if state_path.exists():
             with open(state_path, 'r') as f:
                 return json.load(f)
     except Exception as e:
         pass
-    
+
     return {}
 
 
@@ -85,7 +85,7 @@ def check_database_files():
     config = get_config_data()
     db_dir = config.get('db directory', '~/.cvdupdate/database')
     db_path = Path(db_dir).expanduser()
-    
+
     results = {
         'directory_exists': db_path.exists(),
         'directory_path': str(db_path),
@@ -93,10 +93,10 @@ def check_database_files():
         'total_files': 0,
         'total_size': 0
     }
-    
+
     if not db_path.exists():
         return results
-    
+
     # Check for database files
     for pattern in ['*.cvd', '*.cld', '*.cdiff']:
         for file_path in db_path.glob(pattern):
@@ -109,7 +109,7 @@ def check_database_files():
             results['files'][file_path.name] = file_info
             results['total_files'] += 1
             results['total_size'] += stat.st_size
-    
+
     return results
 
 
@@ -121,22 +121,22 @@ def check_last_update():
         'oldest_check': None,
         'newest_check': None
     }
-    
+
     if 'dbs' not in state:
         return results
-    
+
     oldest_timestamp = float('inf')
     newest_timestamp = 0
-    
+
     for db_name, db_info in state['dbs'].items():
         last_checked = db_info.get('last checked', 0)
         last_modified = db_info.get('last modified', 0)
         local_version = db_info.get('local version', 0)
-        
+
         if last_checked > 0:
             check_time = datetime.fromtimestamp(last_checked)
             age_hours = (datetime.now() - check_time).total_seconds() / 3600
-            
+
             results['databases'][db_name] = {
                 'last_checked': check_time,
                 'last_modified': datetime.fromtimestamp(last_modified) if last_modified > 0 else None,
@@ -144,46 +144,46 @@ def check_last_update():
                 'age_hours': age_hours,
                 'status': 'downloaded' if local_version > 0 else 'not_downloaded'
             }
-            
+
             if last_checked < oldest_timestamp:
                 oldest_timestamp = last_checked
                 results['oldest_check'] = check_time
-            
+
             if last_checked > newest_timestamp:
                 newest_timestamp = last_checked
                 results['newest_check'] = check_time
-    
+
     return results
 
 
 def health_check(verbose=False):
     """Perform comprehensive health check."""
     logger = setup_logging(verbose)
-    
+
     logger.info("Performing ClamAV database health check...")
-    
+
     # Check configuration
     config = get_config_data()
     if not config:
         logger.error("❌ Could not read configuration")
         return False
-    
+
     logger.info("✅ Configuration accessible")
-    
+
     # Check database files
     file_results = check_database_files()
-    
+
     if not file_results['directory_exists']:
         logger.error(f"❌ Database directory does not exist: {file_results['directory_path']}")
         return False
-    
+
     logger.info(f"✅ Database directory exists: {file_results['directory_path']}")
-    
+
     if file_results['total_files'] == 0:
         logger.warning("⚠️  No database files found - run update first")
     else:
         logger.info(f"✅ Found {file_results['total_files']} database files ({file_results['total_size']:,} bytes)")
-        
+
         # Check file ages
         for filename, info in file_results['files'].items():
             if filename.endswith('.cvd'):
@@ -191,15 +191,15 @@ def health_check(verbose=False):
                     logger.warning(f"⚠️  {filename} is {info['age_hours']:.1f} hours old")
                 else:
                     logger.info(f"✅ {filename} is recent ({info['age_hours']:.1f} hours old)")
-    
+
     # Check update status
     update_results = check_last_update()
-    
+
     if not update_results['databases']:
         logger.warning("⚠️  No update history found")
     else:
         logger.info(f"✅ Found update history for {len(update_results['databases'])} databases")
-        
+
         for db_name, info in update_results['databases'].items():
             if info['status'] == 'not_downloaded':
                 logger.warning(f"⚠️  {db_name} has not been downloaded")
@@ -207,7 +207,7 @@ def health_check(verbose=False):
                 logger.warning(f"⚠️  {db_name} last checked {info['age_hours']:.1f} hours ago")
             else:
                 logger.info(f"✅ {db_name} recently checked ({info['age_hours']:.1f} hours ago)")
-    
+
     logger.info("Health check completed")
     return True
 
@@ -215,19 +215,19 @@ def health_check(verbose=False):
 def status_report(verbose=False):
     """Generate detailed status report."""
     logger = setup_logging(verbose)
-    
+
     print("ClamAV Database Status Report")
     print("=" * 50)
     print(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print()
-    
+
     # Configuration
     config = get_config_data()
     print("Configuration:")
     for key, value in config.items():
         print(f"  {key}: {value}")
     print()
-    
+
     # File status
     file_results = check_database_files()
     print("Database Files:")
@@ -235,7 +235,7 @@ def status_report(verbose=False):
     print(f"  Exists: {file_results['directory_exists']}")
     print(f"  Total files: {file_results['total_files']}")
     print(f"  Total size: {file_results['total_size']:,} bytes")
-    
+
     if file_results['files']:
         print("  Files:")
         for filename, info in sorted(file_results['files'].items()):
@@ -244,7 +244,7 @@ def status_report(verbose=False):
             print(f"      Modified: {info['modified'].strftime('%Y-%m-%d %H:%M:%S')}")
             print(f"      Age: {info['age_hours']:.1f} hours")
     print()
-    
+
     # Update status
     update_results = check_last_update()
     print("Update Status:")
@@ -270,9 +270,9 @@ def main():
                        help='Perform health check')
     parser.add_argument('--status', action='store_true',
                        help='Generate status report')
-    
+
     args = parser.parse_args()
-    
+
     if args.status:
         status_report(args.verbose)
     elif args.health:

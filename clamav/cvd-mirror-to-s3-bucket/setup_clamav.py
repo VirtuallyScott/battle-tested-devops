@@ -35,24 +35,24 @@ def check_command_available(command):
 def install_clamav_homebrew():
     """Install ClamAV using Homebrew."""
     logger = logging.getLogger(__name__)
-    
+
     if not check_command_available('brew'):
         logger.error("Homebrew not found. Please install Homebrew first.")
         logger.info("Install Homebrew with: /bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"")
         return False
-    
+
     logger.info("Installing ClamAV via Homebrew...")
     try:
-        result = subprocess.run(['brew', 'install', 'clamav'], 
+        result = subprocess.run(['brew', 'install', 'clamav'],
                               capture_output=True, text=True, timeout=600)
-        
+
         if result.returncode == 0:
             logger.info("ClamAV installed successfully")
             return True
         else:
             logger.error(f"Failed to install ClamAV: {result.stderr}")
             return False
-            
+
     except subprocess.TimeoutExpired:
         logger.error("ClamAV installation timed out")
         return False
@@ -64,27 +64,27 @@ def install_clamav_homebrew():
 def install_clamav_apt():
     """Install ClamAV using apt (for Ubuntu/Debian)."""
     logger = logging.getLogger(__name__)
-    
+
     if not check_command_available('apt'):
         logger.error("apt not found. This system doesn't appear to be Ubuntu/Debian.")
         return False
-    
+
     logger.info("Installing ClamAV via apt...")
     try:
         # Update package list
         subprocess.run(['sudo', 'apt', 'update'], check=True)
-        
+
         # Install ClamAV
-        result = subprocess.run(['sudo', 'apt', 'install', '-y', 'clamav', 'clamav-daemon'], 
+        result = subprocess.run(['sudo', 'apt', 'install', '-y', 'clamav', 'clamav-daemon'],
                               capture_output=True, text=True, timeout=600)
-        
+
         if result.returncode == 0:
             logger.info("ClamAV installed successfully")
             return True
         else:
             logger.error(f"Failed to install ClamAV: {result.stderr}")
             return False
-            
+
     except subprocess.CalledProcessError as e:
         logger.error(f"Failed to install ClamAV: {e}")
         return False
@@ -99,23 +99,23 @@ def install_clamav_apt():
 def install_clamav_yum():
     """Install ClamAV using yum (for RHEL/CentOS)."""
     logger = logging.getLogger(__name__)
-    
+
     if not check_command_available('yum'):
         logger.error("yum not found. This system doesn't appear to be RHEL/CentOS.")
         return False
-    
+
     logger.info("Installing ClamAV via yum...")
     try:
-        result = subprocess.run(['sudo', 'yum', 'install', '-y', 'clamav', 'clamav-update'], 
+        result = subprocess.run(['sudo', 'yum', 'install', '-y', 'clamav', 'clamav-update'],
                               capture_output=True, text=True, timeout=600)
-        
+
         if result.returncode == 0:
             logger.info("ClamAV installed successfully")
             return True
         else:
             logger.error(f"Failed to install ClamAV: {result.stderr}")
             return False
-            
+
     except subprocess.CalledProcessError as e:
         logger.error(f"Failed to install ClamAV: {e}")
         return False
@@ -130,16 +130,16 @@ def install_clamav_yum():
 def detect_and_install_clamav():
     """Detect the system and install ClamAV using the appropriate package manager."""
     logger = logging.getLogger(__name__)
-    
+
     # Check if freshclam is already available
     if check_command_available('freshclam'):
         logger.info("freshclam is already available")
         result = subprocess.run(['which', 'freshclam'], capture_output=True, text=True)
         logger.info(f"freshclam location: {result.stdout.strip()}")
         return True
-    
+
     logger.info("freshclam not found, attempting to install...")
-    
+
     # Try different package managers in order of preference
     if check_command_available('brew'):
         logger.info("Detected macOS/Homebrew system")
@@ -159,23 +159,23 @@ def detect_and_install_clamav():
 def verify_installation():
     """Verify that ClamAV was installed correctly."""
     logger = logging.getLogger(__name__)
-    
+
     if not check_command_available('freshclam'):
         logger.error("freshclam is still not available after installation")
         return False
-    
+
     try:
         # Test freshclam help
-        result = subprocess.run(['freshclam', '--help'], 
+        result = subprocess.run(['freshclam', '--help'],
                               capture_output=True, text=True, timeout=10)
-        
+
         if result.returncode == 0:
             logger.info("freshclam is working correctly")
             return True
         else:
             logger.error("freshclam installation verification failed")
             return False
-            
+
     except Exception as e:
         logger.error(f"Error verifying freshclam installation: {e}")
         return False
@@ -198,23 +198,23 @@ The script will verify the installation by checking that freshclam is
 available and working.
         """
     )
-    
-    parser.add_argument('-v', '--verbose', action='store_true', 
+
+    parser.add_argument('-v', '--verbose', action='store_true',
                        help='Enable verbose output')
     parser.add_argument('--verify-only', action='store_true',
                        help='Only verify existing installation, do not install')
-    
+
     args = parser.parse_args()
-    
+
     logger = setup_logging(args.verbose)
-    
+
     if args.verify_only:
         success = verify_installation()
     else:
         success = detect_and_install_clamav()
         if success:
             success = verify_installation()
-    
+
     if success:
         logger.info("ClamAV setup completed successfully")
         sys.exit(0)

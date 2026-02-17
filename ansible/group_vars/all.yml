@@ -1,0 +1,24 @@
+---
+# Global variables applied to all hosts
+# Can be overridden by group_vars or host_vars
+
+# Ansible connection settings
+ansible_connection: ssh
+ansible_port: 22
+ansible_python_interpreter: /usr/bin/python3
+
+# Common settings
+domain: local
+locale: en_US.UTF-8
+
+# Security settings
+firewall_enabled: true
+selinux_state: permissive  # Adjust based on distribution
+
+# Logging
+syslog_server: null  # Set to central logging server if available
+log_retention_days: 14
+
+# Updates
+security_updates_only: false
+reboot_after_updates: false

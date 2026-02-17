@@ -342,7 +342,7 @@ The system supports multiple execution patterns to meet different operational ne
    ```bash
    # Generate cron with S3 sync
    .venv/bin/python schedule_updates.py --cron --s3-sync
-   
+
    # Cron entry will include S3 upload after database update
    30 */4 * * * /path/to/.venv/bin/python /path/to/update_databases.py --s3-sync > /dev/null 2>&1
    ```
@@ -411,7 +411,7 @@ Perfect for maintenance windows or catch-up scenarios:
    ```
    # Comment out the default mirror
    # DatabaseMirror database.clamav.net
-   
+
    # Add your local mirror
    DatabaseMirror http://localhost:8000
    ```

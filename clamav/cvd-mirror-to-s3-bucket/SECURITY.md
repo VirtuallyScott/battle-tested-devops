@@ -22,7 +22,7 @@ The following files are automatically excluded from git commits via `.gitignore`
 
 #### Database Files
 - `*.cvd` - ClamAV virus definition files
-- `*.cld` - Compressed local database files  
+- `*.cld` - Compressed local database files
 - `*.cdiff` - Incremental update files
 - `*.dat` - Database metadata files
 - `*.sign` - Signature files

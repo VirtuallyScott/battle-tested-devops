@@ -1,0 +1,32 @@
+---
+# Variables specific to data center servers
+# Applied to hosts in the dcs group
+
+# Environment designation
+deploy_environment: lab
+datacenter_role: true
+
+# Additional DC-specific packages
+dc_packages:
+  - docker.io
+  - docker-compose
+  - nfs-common
+
+# Docker configuration
+docker_users:
+  - ansible
+
+# Storage mounts
+enable_nfs_mounts: true
+
+# Backup configuration
+backup_enabled: true
+backup_schedule: "0 2 * * *"  # Daily at 2 AM
+backup_retention_days: 30
+
+# Resource limits
+max_cpu_percent: 90
+max_memory_percent: 85
+
+# Service defaults
+default_restart_policy: always
