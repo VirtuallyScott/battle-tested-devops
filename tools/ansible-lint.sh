@@ -28,7 +28,7 @@ if ansible-lint --version &> /dev/null; then
     echo -e "${GREEN}Ansible-lint version:${NC}"
     ansible-lint --version
     echo ""
-    
+
     echo -e "${YELLOW}Linting ansible/ directory...${NC}"
     if ansible-lint .; then
         echo -e "${GREEN}✓ Ansible-lint passed!${NC}"

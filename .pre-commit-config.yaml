@@ -12,7 +12,7 @@ repos:
     hooks:
       - id: ansible-lint
         name: Ansible-lint
-        description: Run ansible-lint on ansible/ directory  
+        description: Run ansible-lint on ansible/ directory
         entry: bash -c 'ansible-lint ansible/'
         language: system
         always_run: true
